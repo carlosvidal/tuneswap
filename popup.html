@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spotify to Apple Music</title>
+    <style>
+        body {
+            width: 300px;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            margin: 0 0 5px 0;
+            font-weight: 600;
+        }
+
+        .header p {
+            font-size: 12px;
+            opacity: 0.8;
+            margin: 0;
+        }
+
+        .stats {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .stat-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .stat-value {
+            font-weight: 600;
+        }
+
+        .controls {
+            margin-bottom: 15px;
+        }
+
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .toggle {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle.active {
+            background: #34C759;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        .toggle.active .toggle-slider {
+            transform: translateX(20px);
+        }
+
+        .button {
+            width: 100%;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-bottom: 8px;
+        }
+
+        .button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .button:last-child {
+            margin-bottom: 0;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 11px;
+            opacity: 0.6;
+            margin-top: 15px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .current-page {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 15px;
+            font-size: 12px;
+        }
+
+        .spotify-links {
+            color: #1DB954;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎵 Spotify ➡️ Apple Music</h1>
+        <p>Convierte automáticamente los links</p>
+    </div>
+
+    <div class="current-page">
+        <div>Página actual:</div>
+        <div id="currentUrl">Cargando...</div>
+        <div style="margin-top: 8px;">
+            Links de Spotify: <span id="spotifyCount" class="spotify-links">0</span>
+        </div>
+    </div>
+
+    <div class="stats">
+        <div class="stat-item">
+            <span>Links convertidos hoy:</span>
+            <span class="stat-value" id="todayCount">0</span>
+        </div>
+        <div class="stat-item">
+            <span>Total convertidos:</span>
+            <span class="stat-value" id="totalCount">0</span>
+        </div>
+        <div class="stat-item">
+            <span>Última conversión:</span>
+            <span class="stat-value" id="lastConversion">Nunca</span>
+        </div>
+    </div>
+
+    <div class="controls">
+        <div class="toggle-container">
+            <span>Extensión habilitada</span>
+            <div class="toggle active" id="enabledToggle">
+                <div class="toggle-slider"></div>
+            </div>
+        </div>
+        
+        <div class="toggle-container">
+            <span>Abrir en nueva pestaña</span>
+            <div class="toggle active" id="newTabToggle">
+                <div class="toggle-slider"></div>
+            </div>
+        </div>
+        
+        <div class="toggle-container">
+            <span>Mostrar notificaciones</span>
+            <div class="toggle active" id="notificationsToggle">
+                <div class="toggle-slider"></div>
+            </div>
+        </div>
+
+        <div class="country-selector" style="margin-top: 15px;">
+            <label for="countrySelect" style="display: block; margin-bottom: 5px; font-size: 14px;">País de Apple Music:</label>
+            <select id="countrySelect" style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: white; font-size: 14px;">
+                <option value="pe">🇵🇪 Perú</option>
+                <option value="us">🇺🇸 Estados Unidos</option>
+                <option value="ar">🇦🇷 Argentina</option>
+                <option value="cl">🇨🇱 Chile</option>
+                <option value="co">🇨🇴 Colombia</option>
+                <option value="mx">🇲🇽 México</option>
+                <option value="es">🇪🇸 España</option>
+                <option value="br">🇧🇷 Brasil</option>
+                <option value="gb">🇬🇧 Reino Unido</option>
+                <option value="fr">🇫🇷 Francia</option>
+                <option value="de">🇩🇪 Alemania</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="actions">
+        <button class="button" id="testConversion">🧪 Probar conversión</button>
+        <button class="button" id="convertAllLinks">🔄 Convertir todos los links</button>
+        <button class="button" id="clearStats">📊 Limpiar estadísticas</button>
+    </div>
+
+    <div class="footer">
+        Desarrollado para una mejor experiencia musical
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>

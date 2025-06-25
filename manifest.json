@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "Spotify to Apple Music Converter",
+  "version": "1.0",
+  "description": "Intercepta links de Spotify y los abre en Apple Music",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "contextMenus",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://open.spotify.com/*",
+    "https://spotify.com/*",
+    "https://music.apple.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Spotify to Apple Music"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}
