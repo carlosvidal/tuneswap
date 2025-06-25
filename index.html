@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página de Demostración - Spotify to Apple Music</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: linear-gradient(135deg, #1DB954, #1ed760);
+            color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            margin: 0;
+        }
+        .test-section {
+            background: #ffffff;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 12px;
+            border-left: 5px solid #1DB954;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .spotify-link {
+            display: inline-block;
+            background: #1DB954;
+            color: white !important;
+            padding: 10px 18px;
+            text-decoration: none;
+            border-radius: 50px;
+            margin: 5px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        .spotify-link:hover {
+            background: #1aa34a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .instructions {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border: 1px solid #bde0fe;
+        }
+        code {
+            background: #e9ecef;
+            padding: 3px 7px;
+            border-radius: 5px;
+            font-family: 'Monaco', 'Consolas', monospace;
+        }
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #777;
+        }
+        footer a {
+            color: #1DB954;
+            text-decoration: none;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎵 Página de Demostración</h1>
+        <p>Spotify to Apple Music Extension</p>
+    </div>
+
+    <div class="instructions">
+        <h3>📋 Instrucciones</h3>
+        <ol>
+            <li>Asegúrate de tener la extensión <strong>Spotify to Apple Music</strong> instalada y habilitada.</li>
+            <li>Haz clic en cualquiera de los enlaces de Spotify de abajo.</li>
+            <li>La extensión debería interceptar el clic y abrir una búsqueda en Apple Music.</li>
+            <li>También puedes probar haciendo clic derecho → "Convertir a Apple Music".</li>
+        </ol>
+    </div>
+
+    <div class="test-section">
+        <h3>🎵 Canciones Populares</h3>
+        <p>Estos enlaces deberían convertirse en búsquedas de canciones específicas en Apple Music:</p>
+        <a href="https://open.spotify.com/track/4iV5W9uYEdYUVa79Axb7Rh" class="spotify-link">🎵 Never Gonna Give You Up - Rick Astley</a>
+        <a href="https://open.spotify.com/track/6habFhsOp2NvshLv26DqMb" class="spotify-link">🎵 Shape of You - Ed Sheeran</a>
+        <a href="https://open.spotify.com/track/7qiZfU4dY1lWllzX7mPBI3" class="spotify-link">🎵 Blinding Lights - The Weeknd</a>
+        <a href="https://open.spotify.com/track/4Dvkj6JhhA12EX05fT7y2e" class="spotify-link">🎵 As It Was - Harry Styles</a>
+        <a href="https://open.spotify.com/track/1BxfuPKGuaTgP7aM0Bbdwr" class="spotify-link">🎵 Cruel Summer - Taylor Swift</a>
+        <a href="https://open.spotify.com/track/0VjIjW4GlULA4LGvWeF43P" class="spotify-link">🎵 Despacito - Luis Fonsi ft. Daddy Yankee</a>
+    </div>
+
+    <div class="test-section">
+        <h3>💿 Álbumes</h3>
+        <p>Estos enlaces deberían convertirse en búsquedas de álbumes completos:</p>
+        <a href="https://open.spotify.com/album/1DFixLWuPkv3KT3TnV35m3" class="spotify-link">💿 After Hours - The Weeknd</a>
+        <a href="https://open.spotify.com/album/6DEjYFkNZh67HP7R9PSZvv" class="spotify-link">💿 ÷ (Divide) - Ed Sheeran</a>
+        <a href="https://open.spotify.com/album/2QJmrSgbdM35R67eoGQo4j" class="spotify-link">💿 Abbey Road - The Beatles</a>
+    </div>
+
+    <div class="test-section">
+        <h3>👨‍🎤 Artistas</h3>
+        <p>Estos enlaces deberían abrir páginas de búsqueda de artistas en Apple Music:</p>
+        <a href="https://open.spotify.com/artist/1dfeR4HaWDbWqFHLkxsg1d" class="spotify-link">👨‍🎤 Queen</a>
+        <a href="https://open.spotify.com/artist/1Xyo4u8uXC1ZmMpatF05PJ" class="spotify-link">👨‍🎤 The Weeknd</a>
+        <a href="https://open.spotify.com/artist/6eUKZXaKkcviH0Ku9w2n3V" class="spotify-link">👨‍🎤 Ed Sheeran</a>
+        <a href="https://open.spotify.com/artist/3TVXtAsR1Inumwj472S9r4" class="spotify-link">👨‍🎤 Drake</a>
+    </div>
+
+    <div class="test-section">
+        <h3>📱 Playlists</h3>
+        <p>Estos enlaces deberían convertirse en búsquedas relacionadas con las playlists:</p>
+        <a href="https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M" class="spotify-link">📱 Today's Top Hits</a>
+        <a href="https://open.spotify.com/playlist/37i9dQZF1DX0XUsuxWHRQd" class="spotify-link">📱 RapCaviar</a>
+        <a href="https://open.spotify.com/playlist/37i9dQZF1DWXRqgorJj26U" class="spotify-link">📱 Rock Classics</a>
+    </div>
+
+    <div class="test-section">
+        <h3>🧪 Casos Especiales</h3>
+        <p>Enlaces para probar casos límite y manejo de errores:</p>
+        <a href="https://open.spotify.com/track/invalidtrackid123" class="spotify-link">❌ Enlace inválido</a>
+        <a href="https://spotify.com/track/4iV5W9uYEdYUVa79Axb7Rh" class="spotify-link">🔄 Enlace sin 'open'</a>
+    </div>
+
+    <footer>
+        <p>Creado para el repositorio <a href="https://github.com/tu-usuario/tu-repositorio" target="_blank">Spotify to Apple Music</a>.</p>
+    </footer>
+
+    <script>
+        console.log('Página de demostración cargada. Lista para probar la extensión.');
+        console.log('Enlaces de Spotify encontrados:', document.querySelectorAll('a[href*="spotify.com"]').length);
+    </script>
+</body>
+</html>
