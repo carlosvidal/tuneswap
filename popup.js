@@ -1,39 +1,40 @@
-// popup.js - Script del popup de la extensión
+// popup.js - TuneSwap Popup Script
 
 document.addEventListener('DOMContentLoaded', async function() {
+    console.log('🎵 TuneSwap: Popup loaded');
     await initializePopup();
     setupEventListeners();
 });
 
-// Inicializar popup con datos actuales
+// Initialize popup with current data
 async function initializePopup() {
     try {
-        // Obtener pestaña actual
+        // Get current tab
         const [tab] = await chrome.tabs.query({active: true, currentWindow: true});
         updateCurrentPageInfo(tab);
         
-        // Cargar configuraciones
+        // Load settings
         await loadSettings();
         
-        // Cargar estadísticas
+        // Load statistics
         await loadStats();
         
-        // Contar links de Spotify en la página actual
+        // Count Spotify links on current page
         await countSpotifyLinks(tab.id);
         
     } catch (error) {
-        console.error('Error inicializando popup:', error);
+        console.error('TuneSwap: Error initializing popup:', error);
     }
 }
 
-// Actualizar información de la página actual
+// Update current page information
 function updateCurrentPageInfo(tab) {
     const urlElement = document.getElementById('currentUrl');
     const url = new URL(tab.url);
     urlElement.textContent = url.hostname;
 }
 
-// Cargar configuraciones guardadas
+// Load saved settings
 async function loadSettings() {
     try {
         const settings = await chrome.storage.sync.get([
@@ -43,23 +44,23 @@ async function loadSettings() {
             'countryCode'
         ]);
         
-        // Actualizar toggles
+        // Update toggles
         updateToggle('enabledToggle', settings.enabled !== false);
         updateToggle('newTabToggle', settings.openInNewTab !== false);
         updateToggle('notificationsToggle', settings.showNotifications !== false);
         
-        // Actualizar selector de país
+        // Update country selector
         const countrySelect = document.getElementById('countrySelect');
         if (countrySelect) {
-            countrySelect.value = settings.countryCode || 'pe';
+            countrySelect.value = settings.countryCode || 'us';
         }
         
     } catch (error) {
-        console.error('Error cargando configuraciones:', error);
+        console.error('TuneSwap: Error loading settings:', error);
     }
 }
 
-// Cargar estadísticas
+// Load statistics
 async function loadStats() {
     try {
         const stats = await chrome.storage.local.get([
@@ -82,11 +83,11 @@ async function loadStats() {
         }
         
     } catch (error) {
-        console.error('Error cargando estadísticas:', error);
+        console.error('TuneSwap: Error loading statistics:', error);
     }
 }
 
-// Contar links de Spotify en la página
+// Count Spotify links on the page
 async function countSpotifyLinks(tabId) {
     try {
         const results = await chrome.scripting.executeScript({
@@ -101,14 +102,14 @@ async function countSpotifyLinks(tabId) {
         document.getElementById('spotifyCount').textContent = count;
         
     } catch (error) {
-        console.error('Error contando links:', error);
+        console.error('TuneSwap: Error counting links:', error);
         document.getElementById('spotifyCount').textContent = '?';
     }
 }
 
-// Configurar event listeners
+// Set up event listeners
 function setupEventListeners() {
-    // Toggles de configuración
+    // Configuration toggles
     document.getElementById('enabledToggle').addEventListener('click', () => {
         toggleSetting('enabled', 'enabledToggle');
     });
@@ -121,23 +122,24 @@ function setupEventListeners() {
         toggleSetting('showNotifications', 'notificationsToggle');
     });
 
-    // Selector de país
+    // Country selector
     document.getElementById('countrySelect').addEventListener('change', async (e) => {
         try {
             await chrome.storage.sync.set({countryCode: e.target.value});
-            showTemporaryMessage(`País cambiado a: ${e.target.options[e.target.selectedIndex].text}`);
+            const countryName = e.target.options[e.target.selectedIndex].text;
+            showTemporaryMessage(`Region changed to: ${countryName}`);
         } catch (error) {
-            console.error('Error guardando país:', error);
+            console.error('TuneSwap: Error saving country:', error);
         }
     });
     
-    // Botones de acción
+    // Action buttons
     document.getElementById('testConversion').addEventListener('click', testConversion);
     document.getElementById('convertAllLinks').addEventListener('click', convertAllLinks);
     document.getElementById('clearStats').addEventListener('click', clearStats);
 }
 
-// Actualizar estado de toggle
+// Update toggle state
 function updateToggle(toggleId, isActive) {
     const toggle = document.getElementById(toggleId);
     if (isActive) {
@@ -147,7 +149,7 @@ function updateToggle(toggleId, isActive) {
     }
 }
 
-// Cambiar configuración
+// Change setting
 async function toggleSetting(settingName, toggleId) {
     try {
         const current = await chrome.storage.sync.get([settingName]);
@@ -156,78 +158,80 @@ async function toggleSetting(settingName, toggleId) {
         await chrome.storage.sync.set({[settingName]: newValue});
         updateToggle(toggleId, newValue);
         
-        // Mostrar feedback
-        showTemporaryMessage(`${settingName} ${newValue ? 'habilitado' : 'deshabilitado'}`);
+        // Show feedback
+        const status = newValue ? 'enabled' : 'disabled';
+        showTemporaryMessage(`${settingName} ${status}`);
         
     } catch (error) {
-        console.error('Error cambiando configuración:', error);
+        console.error('TuneSwap: Error changing setting:', error);
     }
 }
 
-// Probar conversión con link de ejemplo
+// Test conversion with example link
 async function testConversion() {
     const testUrl = 'https://open.spotify.com/track/4iV5W9uYEdYUVa79Axb7Rh';
     
-    showTemporaryMessage('Probando conversión...');
+    showTemporaryMessage('Testing conversion...');
     
     try {
-        // Obtener código de país de la configuración
+        // Get country code from settings
         const settings = await chrome.storage.sync.get(['countryCode']);
-        const countryCode = settings.countryCode || 'pe';
+        const countryCode = settings.countryCode || 'us';
         
-        // Obtener metadata real de Spotify
+        // Get real Spotify metadata
         const response = await fetch(`https://open.spotify.com/embed/track/4iV5W9uYEdYUVa79Axb7Rh`);
         const html = await response.text();
         
-        // Extraer título real
+        // Extract real title
         const titleMatch = html.match(/<title>([^<]+)<\/title>/);
         let title = titleMatch ? titleMatch[1].replace(' | Spotify', '') : 'Never Gonna Give You Up';
         
-        // Limpiar título para búsqueda óptima
+        // Clean title for optimal search
         title = title
-            .replace(/\s*[\(\[].*?[\)\]]/g, '') // Remover paréntesis
-            .replace(/\s*(feat|ft|featuring)\.?\s+.*/gi, '') // Remover featuring
-            .replace(/\s*-\s*.*$/, '') // Remover todo después de guión
+            .replace(/\s*[\(\[].*?[\)\]]/g, '') // Remove parentheses
+            .replace(/\s*(feat|ft|featuring)\.?\s+.*/gi, '') // Remove featuring
+            .replace(/\s*-\s*.*$/, '') // Remove everything after dash
             .toLowerCase()
             .replace(/[^\w\s]/g, ' ')
             .replace(/\s+/g, ' ')
             .trim();
         
-        console.log('🎵 Título extraído y limpiado:', title);
-        console.log('🌍 Usando país:', countryCode);
+        console.log('🎵 TuneSwap: Extracted and cleaned title:', title);
+        console.log('🌍 TuneSwap: Using country:', countryCode);
         
-        // Usar código de país configurado
+        // Use configured country code
         const appleMusicUrl = `https://music.apple.com/${countryCode}/search?term=${encodeURIComponent(title)}`;
         
         chrome.tabs.create({url: appleMusicUrl});
-        showTemporaryMessage('✅ Conversión exitosa - abriendo Apple Music');
+        showTemporaryMessage('✅ Conversion successful - opening Apple Music');
         
     } catch (error) {
-        console.error('Error en prueba:', error);
-        // Fallback con búsqueda simple
-        const fallbackUrl = 'https://music.apple.com/pe/search?term=never%20gonna%20give%20you%20up';
+        console.error('TuneSwap: Error in test:', error);
+        // Fallback with simple search
+        const fallbackUrl = 'https://music.apple.com/us/search?term=never%20gonna%20give%20you%20up';
         chrome.tabs.create({url: fallbackUrl});
-        showTemporaryMessage('✅ Usando búsqueda básica');
+        showTemporaryMessage('✅ Using basic search');
     }
 }
 
-// Convertir todos los links de la página
+// Convert all links on the page
 async function convertAllLinks() {
     try {
         const [tab] = await chrome.tabs.query({active: true, currentWindow: true});
         
-        showTemporaryMessage('Convirtiendo todos los links...');
+        showTemporaryMessage('Converting all links...');
         
-        await chrome.scripting.executeScript({
+        const results = await chrome.scripting.executeScript({
             target: {tabId: tab.id},
             func: () => {
                 const spotifyLinks = document.querySelectorAll('a[href*="spotify.com"], a[href*="open.spotify.com"]');
                 let converted = 0;
                 
                 spotifyLinks.forEach(link => {
-                    // Agregar indicador visual
-                    link.style.border = '2px solid #007AFF';
-                    link.title = 'Link convertido a Apple Music';
+                    // Add visual indicator
+                    link.style.border = '2px solid #1DB954';
+                    link.style.borderRadius = '4px';
+                    link.title = 'TuneSwap: Link marked for conversion';
                     converted++;
                 });
                 
@@ -235,30 +239,31 @@ async function convertAllLinks() {
             }
         });
         
-        showTemporaryMessage('✅ Links marcados para conversión');
+        const count = results[0]?.result || 0;
+        showTemporaryMessage(`✅ ${count} links marked for conversion`);
         
     } catch (error) {
-        console.error('Error convirtiendo links:', error);
-        showTemporaryMessage('❌ Error convirtiendo links');
+        console.error('TuneSwap: Error converting links:', error);
+        showTemporaryMessage('❌ Error converting links');
     }
 }
 
-// Limpiar estadísticas
+// Clear statistics
 async function clearStats() {
     try {
         await chrome.storage.local.clear();
         await loadStats();
-        showTemporaryMessage('📊 Estadísticas limpiadas');
+        showTemporaryMessage('📊 Statistics cleared');
         
     } catch (error) {
-        console.error('Error limpiando estadísticas:', error);
-        showTemporaryMessage('❌ Error limpiando estadísticas');
+        console.error('TuneSwap: Error clearing statistics:', error);
+        showTemporaryMessage('❌ Error clearing statistics');
     }
 }
 
-// Mostrar mensaje temporal
+// Show temporary message
 function showTemporaryMessage(message) {
-    // Crear elemento de mensaje si no existe
+    // Create message element if it doesn't exist
     let messageEl = document.getElementById('tempMessage');
     if (!messageEl) {
         messageEl = document.createElement('div');
@@ -268,14 +273,16 @@ function showTemporaryMessage(message) {
             top: 10px;
             left: 10px;
             right: 10px;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(29, 185, 84, 0.95);
             color: white;
             padding: 8px 12px;
-            border-radius: 4px;
+            border-radius: 6px;
             font-size: 12px;
+            font-weight: 500;
             text-align: center;
             z-index: 1000;
             transition: opacity 0.3s;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
         `;
         document.body.appendChild(messageEl);
     }
@@ -283,7 +290,7 @@ function showTemporaryMessage(message) {
     messageEl.textContent = message;
     messageEl.style.opacity = '1';
     
-    // Ocultar después de 2 segundos
+    // Hide after 2.5 seconds
     setTimeout(() => {
         messageEl.style.opacity = '0';
         setTimeout(() => {
@@ -291,10 +298,10 @@ function showTemporaryMessage(message) {
                 messageEl.parentNode.removeChild(messageEl);
             }
         }, 300);
-    }, 2000);
+    }, 2500);
 }
 
-// Formatear tiempo relativo
+// Format relative time
 function formatRelativeTime(date) {
     const now = new Date();
     const diffMs = now - date;
@@ -302,9 +309,9 @@ function formatRelativeTime(date) {
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
     
-    if (diffMins < 1) return 'Ahora';
-    if (diffMins < 60) return `${diffMins}m`;
-    if (diffHours < 24) return `${diffHours}h`;
-    if (diffDays < 7) return `${diffDays}d`;
+    if (diffMins < 1) return 'Now';
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays < 7) return `${diffDays}d ago`;
     return date.toLocaleDateString();
 }

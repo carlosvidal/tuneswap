@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Spotify to Apple Music Converter",
-  "version": "1.0",
-  "description": "Intercepta links de Spotify y los abre en Apple Music",
+  "name": "TuneSwap",
+  "version": "1.0.0",
+  "description": "Instantly convert Spotify links to Apple Music with one click. Seamless music platform switching.",
   "permissions": [
     "activeTab",
     "storage",
@@ -26,11 +26,13 @@
   },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Spotify to Apple Music"
+    "default_title": "TuneSwap - Convert Spotify to Apple Music"
   },
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
-  }
+  },
+  "homepage_url": "https://tuneswap.app",
+  "author": "Carlos Vidal"
 }

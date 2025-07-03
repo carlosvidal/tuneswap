@@ -1,10 +1,10 @@
-// content.js - Intercepta clicks en links de Spotify
+// content.js - TuneSwap Content Script
 (function() {
     'use strict';
     
-    console.log('🎵 Spotify to Apple Music converter cargado');
+    console.log('🎵 TuneSwap extension loaded');
 
-    // Función para extraer información de un link de Spotify
+    // Function to extract information from a Spotify link
     function extractSpotifyInfo(url) {
         try {
             const patterns = {
@@ -26,18 +26,18 @@
             }
             return null;
         } catch (error) {
-            console.error('❌ Error extrayendo info de Spotify:', error);
+            console.error('❌ TuneSwap: Error extracting Spotify info:', error);
             return null;
         }
     }
 
-    // Función alternativa para obtener metadata usando oembed
+    // Alternative function to get metadata using oembed
     async function getSpotifyMetadataOembed(type, id) {
         try {
-            console.log(`🔍 Intentando oembed para ${type}:${id}`);
+            console.log(`🔍 TuneSwap: Trying oembed for ${type}:${id}`);
             
             const oembedUrl = `https://open.spotify.com/oembed?url=https://open.spotify.com/${type}/${id}`;
-            console.log('📡 Oembed URL:', oembedUrl);
+            console.log('📡 TuneSwap: Oembed URL:', oembedUrl);
             
             const response = await fetch(oembedUrl);
             if (!response.ok) {
@@ -45,13 +45,13 @@
             }
             
             const data = await response.json();
-            console.log('📄 Oembed data:', data);
+            console.log('📄 TuneSwap: Oembed data:', data);
             
             if (data.title) {
                 let title = '';
                 let artist = '';
                 
-                // El formato típico es "Song by Artist" en oembed
+                // Typical format is "Song by Artist" in oembed
                 const byMatch = data.title.match(/^(.+?)\s+by\s+(.+)$/i);
                 if (byMatch) {
                     title = byMatch[1].trim();
@@ -71,31 +71,31 @@
             return null;
             
         } catch (error) {
-            console.warn('⚠️ Oembed fallido:', error);
+            console.warn('⚠️ TuneSwap: Oembed failed:', error);
             return null;
         }
     }
 
-    // Función principal de obtención de metadata con múltiples métodos
+    // Main metadata extraction function with multiple methods
     async function getSpotifyMetadata(type, id) {
-        console.log(`🔍 Iniciando extracción de metadata para ${type}:${id}`);
+        console.log(`🔍 TuneSwap: Starting metadata extraction for ${type}:${id}`);
         
-        // Método 1: Intentar oembed primero (más confiable)
+        // Method 1: Try oembed first (more reliable)
         let metadata = await getSpotifyMetadataOembed(type, id);
         if (metadata && metadata.title) {
-            console.log('✅ Metadata obtenida via oembed:', metadata);
+            console.log('✅ TuneSwap: Metadata obtained via oembed:', metadata);
             return metadata;
         }
         
-        // Método 2: Fallback a embed HTML scraping
+        // Method 2: Fallback to embed HTML scraping
         metadata = await getSpotifyMetadataEmbed(type, id);
         if (metadata && metadata.title) {
-            console.log('✅ Metadata obtenida via embed:', metadata);
+            console.log('✅ TuneSwap: Metadata obtained via embed:', metadata);
             return metadata;
         }
         
-        // Método 3: Último recurso - usar el ID como título
-        console.warn('⚠️ No se pudo obtener metadata, usando ID como título');
+        // Method 3: Last resort - use ID as title
+        console.warn('⚠️ TuneSwap: Could not get metadata, using ID as title');
         return {
             title: `track_${id}`,
             artist: '',
@@ -104,14 +104,14 @@
         };
     }
 
-    // Función para obtener metadata via embed (renombrada del método anterior)
+    // Function to get metadata via embed (renamed from previous method)
     async function getSpotifyMetadataEmbed(type, id) {
         try {
-            console.log(`🔍 Obteniendo metadata para ${type}:${id}`);
+            console.log(`🔍 TuneSwap: Getting metadata for ${type}:${id}`);
             
-            // Construir URL correcta
+            // Build correct URL
             const embedUrl = `https://open.spotify.com/embed/${type}/${id}`;
-            console.log('📡 Fetching URL:', embedUrl);
+            console.log('📡 TuneSwap: Fetching URL:', embedUrl);
             
             const response = await fetch(embedUrl);
             if (!response.ok) {
@@ -119,62 +119,62 @@
             }
             
             const html = await response.text();
-            console.log('📄 HTML length:', html.length);
+            console.log('📄 TuneSwap: HTML length:', html.length);
             
-            // Método 1: Extraer del título de la página
+            // Method 1: Extract from page title
             let title = '';
             let artist = '';
             let album = '';
             
-            // Debug: mostrar parte del HTML
+            // Debug: show part of HTML
             const titleMatch = html.match(/<title>([^<]+)<\/title>/);
-            console.log('🔍 Title match:', titleMatch);
+            console.log('🔍 TuneSwap: Title match:', titleMatch);
             
             if (titleMatch) {
                 const fullTitle = titleMatch[1].replace(' | Spotify', '');
-                console.log('📝 Full title from HTML:', fullTitle);
+                console.log('📝 TuneSwap: Full title from HTML:', fullTitle);
                 
-                // Intentar diferentes formatos de título
-                // Formato 1: "Song by Artist"
+                // Try different title formats
+                // Format 1: "Song by Artist"
                 const byMatch = fullTitle.match(/^(.+?)\s+by\s+(.+)$/i);
                 if (byMatch) {
                     title = byMatch[1].trim();
                     artist = byMatch[2].trim();
-                    console.log('✅ Parsed "by" format - Title:', title, 'Artist:', artist);
+                    console.log('✅ TuneSwap: Parsed "by" format - Title:', title, 'Artist:', artist);
                 }
-                // Formato 2: "Artist - Song" 
+                // Format 2: "Artist - Song" 
                 else {
                     const dashMatch = fullTitle.match(/^(.+?)\s*[-–—]\s*(.+)$/);
                     if (dashMatch) {
                         artist = dashMatch[1].trim();
                         title = dashMatch[2].trim();
-                        console.log('✅ Parsed dash format - Artist:', artist, 'Title:', title);
+                        console.log('✅ TuneSwap: Parsed dash format - Artist:', artist, 'Title:', title);
                     } else {
-                        // Solo título
+                        // Only title
                         title = fullTitle;
-                        console.log('✅ Using full title:', title);
+                        console.log('✅ TuneSwap: Using full title:', title);
                     }
                 }
             }
             
-            // Método 2: Buscar metadata específica
+            // Method 2: Look for specific metadata
             const metaArtist = html.match(/property="music:musician"[^>]*content="([^"]+)"/);
             const metaAlbum = html.match(/property="music:album"[^>]*content="([^"]+)"/);
             const metaTitle = html.match(/property="og:title"[^>]*content="([^"]+)"/);
             
-            console.log('🏷️ Meta artist:', metaArtist ? metaArtist[1] : 'none');
-            console.log('🏷️ Meta album:', metaAlbum ? metaAlbum[1] : 'none');
-            console.log('🏷️ Meta title:', metaTitle ? metaTitle[1] : 'none');
+            console.log('🏷️ TuneSwap: Meta artist:', metaArtist ? metaArtist[1] : 'none');
+            console.log('🏷️ TuneSwap: Meta album:', metaAlbum ? metaAlbum[1] : 'none');
+            console.log('🏷️ TuneSwap: Meta title:', metaTitle ? metaTitle[1] : 'none');
             
-            // Usar metadata si está disponible y es mejor
+            // Use metadata if available and better
             if (metaArtist && metaArtist[1]) artist = metaArtist[1];
             if (metaAlbum && metaAlbum[1]) album = metaAlbum[1];
             if (metaTitle && metaTitle[1] && !title) title = metaTitle[1];
             
-            // Método 3: Buscar en script tags o JSON
+            // Method 3: Look in script tags or JSON
             const scriptMatch = html.match(/<script[^>]*>.*?"name":\s*"([^"]+)".*?<\/script>/s);
             if (scriptMatch) {
-                console.log('📜 Found name in script:', scriptMatch[1]);
+                console.log('📜 TuneSwap: Found name in script:', scriptMatch[1]);
                 if (!title) title = scriptMatch[1];
             }
             
@@ -185,73 +185,72 @@
                 type
             };
             
-            console.log('✅ Final metadata extracted:', metadata);
+            console.log('✅ TuneSwap: Final metadata extracted:', metadata);
             
-            // Verificar que tenemos datos útiles
+            // Verify we have useful data
             if (!metadata.title && !metadata.artist) {
-                console.warn('⚠️ No useful metadata found, trying fallback');
+                console.warn('⚠️ TuneSwap: No useful metadata found, trying fallback');
                 return null;
             }
             
             return metadata;
             
         } catch (error) {
-            console.error('❌ Error obteniendo metadata de Spotify:', error);
+            console.error('❌ TuneSwap: Error getting Spotify metadata:', error);
             return null;
         }
     }
 
-    // Función para detectar código de país del usuario
+    // Function to detect user's country code
     async function getCountryCode() {
         try {
-            // Primero intentar obtener de la configuración guardada
+            // First try to get from saved settings
             const settings = await chrome.storage.sync.get(['countryCode']);
             if (settings.countryCode) {
-                console.log('✅ Usando país configurado:', settings.countryCode);
+                console.log('✅ TuneSwap: Using configured country:', settings.countryCode);
                 return settings.countryCode;
             }
         } catch (error) {
-            console.warn('⚠️ No se pudo acceder a la configuración:', error);
+            console.warn('⚠️ TuneSwap: Could not access settings:', error);
         }
         
-        // Para debugging, vamos a mostrar la información del navegador
+        // For debugging, show browser information
         const language = navigator.language || navigator.userLanguage;
         const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
         
-        console.log('🌍 Idioma del navegador:', language);
-        console.log('🕐 Timezone:', timezone);
+        console.log('🌍 TuneSwap: Browser language:', language);
+        console.log('🕐 TuneSwap: Timezone:', timezone);
         
-        // Forzar PE para Perú por ahora - después podemos hacer esto configurable
-        // Si el timezone incluye Lima o el idioma es español, usar PE
+        // Smart country detection
         if (timezone.includes('Lima') || language.startsWith('es')) {
-            console.log('✅ Usando código de país: pe');
+            console.log('✅ TuneSwap: Using country code: pe');
             return 'pe';
         }
         
-        // Para otros casos, usar US como fallback
-        console.log('⚠️ Usando fallback: us');
+        // For other cases, use US as fallback
+        console.log('⚠️ TuneSwap: Using fallback: us');
         return 'us';
     }
 
-    // Función para crear URL de búsqueda en Apple Music
+    // Function to create Apple Music search URL
     async function createAppleMusicSearchUrl(metadata) {
         try {
             let searchQuery = '';
             
             switch(metadata.type) {
                 case 'track':
-                    // Para tracks, priorizar solo el título si es muy específico
+                    // For tracks, prioritize just the title if very specific
                     if (metadata.title && metadata.title.length > 0) {
-                        // Limpiar el título de caracteres especiales y "feat", "ft", etc.
+                        // Clean title of special characters and "feat", "ft", etc.
                         let cleanTitle = metadata.title
-                            .replace(/\s*[\(\[].*?[\)\]]/g, '') // Remover paréntesis y corchetes
-                            .replace(/\s*(feat|ft|featuring)\.?\s+.*/gi, '') // Remover featuring
-                            .replace(/\s*-\s*.*$/, '') // Remover todo después de guión
+                            .replace(/\s*[\(\[].*?[\)\]]/g, '') // Remove parentheses and brackets
+                            .replace(/\s*(feat|ft|featuring)\.?\s+.*/gi, '') // Remove featuring
+                            .replace(/\s*-\s*.*$/, '') // Remove everything after dash
                             .trim();
                         
                         searchQuery = cleanTitle;
                         
-                        // Solo añadir artista si el título es muy corto o genérico
+                        // Only add artist if title is very short or generic
                         if (cleanTitle.length < 15 && metadata.artist) {
                             searchQuery = `${metadata.artist} ${cleanTitle}`.trim();
                         }
@@ -274,139 +273,141 @@
                 return await createFallbackUrl();
             }
 
-            // Limpiar y simplificar la búsqueda
+            // Clean and simplify search
             searchQuery = searchQuery
                 .toLowerCase()
-                .replace(/[^\w\s]/g, ' ') // Reemplazar caracteres especiales con espacios
-                .replace(/\s+/g, ' ') // Múltiples espacios a uno solo
+                .replace(/[^\w\s]/g, ' ') // Replace special characters with spaces
+                .replace(/\s+/g, ' ') // Multiple spaces to single space
                 .trim();
 
-            console.log('🔍 Búsqueda final:', searchQuery);
+            console.log('🔍 TuneSwap: Final search query:', searchQuery);
             
-            // Detectar código de país
+            // Detect country code
             const countryCode = await getCountryCode();
-            console.log('🌍 País detectado:', countryCode);
+            console.log('🌍 TuneSwap: Detected country:', countryCode);
 
-            // Crear URL de búsqueda de Apple Music con código de país detectado
+            // Create Apple Music search URL with detected country code
             return `https://music.apple.com/${countryCode}/search?term=${encodeURIComponent(searchQuery)}`;
             
         } catch (error) {
-            console.error('❌ Error creando URL de Apple Music:', error);
+            console.error('❌ TuneSwap: Error creating Apple Music URL:', error);
             return await createFallbackUrl();
         }
     }
 
-    // Función para crear URL de fallback
+    // Function to create fallback URL
     async function createFallbackUrl() {
         const countryCode = await getCountryCode();
         return `https://music.apple.com/${countryCode}/search`;
     }
 
-    // Función principal para convertir link
+    // Main function to convert link
     async function convertSpotifyToAppleMusic(spotifyUrl) {
         try {
-            console.log('🔄 Iniciando conversión:', spotifyUrl);
+            console.log('🔄 TuneSwap: Starting conversion:', spotifyUrl);
             
-            // Mostrar loading
+            // Show loading
             showLoadingIndicator();
             
             const spotifyInfo = extractSpotifyInfo(spotifyUrl);
             if (!spotifyInfo) {
-                console.error('❌ No se pudo extraer información del link de Spotify');
+                console.error('❌ TuneSwap: Could not extract info from Spotify link');
                 hideLoadingIndicator();
-                return createFallbackUrl();
+                return await createFallbackUrl();
             }
 
-            // Obtener metadata de Spotify
+            // Get Spotify metadata
             const metadata = await getSpotifyMetadata(spotifyInfo.type, spotifyInfo.id);
             if (!metadata || !metadata.title) {
-                console.warn('⚠️ No se pudo obtener metadata, usando fallback');
+                console.warn('⚠️ TuneSwap: Could not get metadata, using fallback');
                 hideLoadingIndicator();
-                return createFallbackUrl();
+                return await createFallbackUrl();
             }
 
-            // Buscar en Apple Music
-            const appleMusicUrl = createAppleMusicSearchUrl(metadata);
+            // Search in Apple Music
+            const appleMusicUrl = await createAppleMusicSearchUrl(metadata);
             
             hideLoadingIndicator();
-            console.log('✅ Conversión exitosa:', appleMusicUrl);
+            console.log('✅ TuneSwap: Conversion successful:', appleMusicUrl);
             
-            // Notificar al background script
+            // Notify background script
             try {
                 chrome.runtime.sendMessage({
                     action: 'updateStats'
                 });
             } catch (error) {
-                console.warn('⚠️ No se pudo actualizar estadísticas:', error);
+                console.warn('⚠️ TuneSwap: Could not update statistics:', error);
             }
             
             return appleMusicUrl;
             
         } catch (error) {
-            console.error('❌ Error en conversión:', error);
+            console.error('❌ TuneSwap: Error in conversion:', error);
             hideLoadingIndicator();
-            return createFallbackUrl();
+            return await createFallbackUrl();
         }
     }
 
-    // Indicador de carga simple
+    // Simple loading indicator
     function showLoadingIndicator() {
-        if (document.getElementById('spotify-apple-loading')) return;
+        if (document.getElementById('tuneswap-loading')) return;
         
         const loading = document.createElement('div');
-        loading.id = 'spotify-apple-loading';
+        loading.id = 'tuneswap-loading';
         loading.style.cssText = `
             position: fixed;
             top: 20px;
             right: 20px;
-            background: #007AFF;
+            background: linear-gradient(135deg, #1DB954, #1ed760);
             color: white;
-            padding: 10px 15px;
-            border-radius: 5px;
+            padding: 12px 18px;
+            border-radius: 8px;
             z-index: 10000;
             font-family: -apple-system, BlinkMacSystemFont, sans-serif;
             font-size: 14px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            font-weight: 500;
+            box-shadow: 0 4px 15px rgba(29, 185, 84, 0.3);
+            backdrop-filter: blur(10px);
         `;
-        loading.textContent = '🔄 Convirtiendo a Apple Music...';
+        loading.textContent = '🎵 Converting to Apple Music...';
         document.body.appendChild(loading);
     }
 
     function hideLoadingIndicator() {
-        const loading = document.getElementById('spotify-apple-loading');
+        const loading = document.getElementById('tuneswap-loading');
         if (loading) {
             loading.remove();
         }
     }
 
-    // Interceptar clicks en links
+    // Intercept clicks on links
     document.addEventListener('click', async function(e) {
         const link = e.target.closest('a');
         if (!link || !link.href) return;
 
-        // Verificar si es un link de Spotify
+        // Check if it's a Spotify link
         if (link.href.includes('open.spotify.com') || link.href.includes('spotify.com')) {
             e.preventDefault();
             e.stopPropagation();
             
-            console.log('🎵 Link de Spotify interceptado:', link.href);
+            console.log('🎵 TuneSwap: Spotify link intercepted:', link.href);
             
             const appleMusicUrl = await convertSpotifyToAppleMusic(link.href);
             
             if (appleMusicUrl) {
-                console.log('✅ Abriendo en Apple Music:', appleMusicUrl);
+                console.log('✅ TuneSwap: Opening in Apple Music:', appleMusicUrl);
                 window.open(appleMusicUrl, '_blank');
             } else {
-                console.warn('⚠️ Usando fallback');
-                window.open(createFallbackUrl(), '_blank');
+                console.warn('⚠️ TuneSwap: Using fallback');
+                window.open(await createFallbackUrl(), '_blank');
             }
         }
     });
 
-    // Escuchar mensajes del background script
+    // Listen for messages from background script
     if (typeof chrome !== 'undefined' && chrome.runtime) {
         chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-            console.log('📨 Mensaje recibido del background:', request);
+            console.log('📨 TuneSwap: Message received from background:', request);
             
             if (request.action === 'convertLink' && request.url) {
                 convertSpotifyToAppleMusic(request.url).then(appleMusicUrl => {
@@ -418,14 +419,21 @@
                         sendResponse({success: false, fallback: true});
                     }
                 }).catch(error => {
-                    console.error('❌ Error procesando mensaje:', error);
+                    console.error('❌ TuneSwap: Error processing message:', error);
                     sendResponse({success: false, error: error.message});
                 });
                 
-                return true; // Mantener canal abierto
+                return true; // Keep channel open
+            }
+        });
+
+        // Let test pages know TuneSwap is active
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'TUNESWAP_TEST_PAGE') {
+                window.postMessage({ type: 'TUNESWAP_ACTIVE' }, '*');
             }
         });
     }
 
-    console.log('✅ Spotify to Apple Music converter configurado correctamente');
+    console.log('✅ TuneSwap: Extension configured successfully');
 })();

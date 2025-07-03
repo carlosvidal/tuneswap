@@ -1,71 +1,183 @@
-# Spotify to Apple Music Converter
+# 🎵 TuneSwap
 
-A Chrome extension that automatically intercepts Spotify links and opens them in Apple Music.
+**Seamlessly convert Spotify links to Apple Music with one click.**
 
-## Features
+A Chrome extension that automatically intercepts Spotify links and opens them in Apple Music, making music platform switching effortless.
 
-*   **Automatic Link Interception:** Clicks on Spotify links are automatically redirected to a search on Apple Music.
-*   **Context Menu Integration:** Right-click on any Spotify link to convert it to an Apple Music link.
-*   **Customizable Settings:**
-    *   Enable or disable the extension.
-    *   Choose to open links in a new tab.
-    *   Enable or disable notifications.
-    *   Set your country for accurate Apple Music storefronts.
-*   **Statistics Tracking:** Keep track of how many links you have converted.
+![TuneSwap Logo](./tuneswap.svg)
 
-## How it Works
+## ✨ Features
 
-The extension uses a content script (`content.js`) to detect clicks on Spotify links on any webpage. When a link is clicked, it prevents the default action and instead:
-1.  Extracts the type of content (track, album, artist, playlist) and its ID from the Spotify URL.
-2.  Fetches metadata from Spotify's oEmbed endpoint or by scraping the embed page to get details like the title and artist.
-3.  Constructs a search URL for the Apple Music website, using the extracted metadata.
-4.  Opens the Apple Music search page in a new tab.
+- **🔄 Automatic Link Conversion**: Clicks on Spotify links are automatically redirected to Apple Music search
+- **🖱️ Context Menu Integration**: Right-click any Spotify link to convert it instantly
+- **⚙️ Smart Country Detection**: Automatically uses your region's Apple Music storefront
+- **📊 Usage Statistics**: Track how many links you've converted
+- **🎯 Intelligent Matching**: Uses multiple methods to extract song metadata for accurate searches
 
-The extension also includes a popup (`popup.html` and `popup.js`) that allows you to view statistics, change settings, and test the conversion functionality. The background script (`background.js`) manages the extension's state, settings, and the context menu.
+### 🛠️ Customizable Settings
+- Enable or disable the extension
+- Choose to open links in new tabs
+- Select your preferred country/region
+- Toggle notifications
+- View detailed conversion statistics
 
-## Installation
+## 🚀 How It Works
 
-1.  Clone or download this repository to your local machine.
-2.  Open Google Chrome and navigate to `chrome://extensions`.
-3.  Enable **"Developer mode"** using the toggle switch in the top-right corner.
-4.  Click the **"Load unpacked"** button and select the directory where you cloned or downloaded the repository.
+TuneSwap uses advanced techniques to provide seamless music platform conversion:
 
-## Usage
+1. **Link Detection**: Content script detects clicks on Spotify links across any webpage
+2. **Metadata Extraction**: Uses Spotify's oEmbed API and web scraping to get song details
+3. **Smart Search Generation**: Creates optimized Apple Music search URLs with extracted metadata
+4. **Regional Optimization**: Automatically uses the correct Apple Music storefront for your region
 
-Once installed, the extension will be active and automatically convert Spotify links. You can click on the extension icon in the Chrome toolbar to access the popup, view stats, and configure settings to your preference.
+### 🔧 Technical Implementation
 
-## Files
+The extension consists of:
+- **Content Script** (`content.js`): Handles link interception and metadata extraction
+- **Background Service Worker** (`background.js`): Manages settings, context menus, and statistics
+- **Popup Interface** (`popup.html` + `popup.js`): Provides user controls and statistics
+- **Manifest** (`manifest.json`): Defines extension permissions and components
 
-*   `manifest.json`: The manifest file for the Chrome extension, defining permissions and components.
-*   `background.js`: The service worker. Handles background tasks such as creating the context menu, managing storage, and handling extension-wide events.
-*   `content.js`: The content script injected into web pages. It intercepts clicks on Spotify links and initiates the conversion process.
-*   `popup.html`: The HTML structure for the extension's popup.
-*   `popup.js`: The JavaScript that powers the popup, handling user interaction, settings, and displaying stats.
-*   `icons/`: Directory containing the extension's icons in various sizes.
+## 📦 Installation
 
----
+### From Source (Developer Mode)
 
-## Limitations
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/yourusername/tuneswap.git
+   cd tuneswap
+   ```
 
-*   **Relies on Scraping/oEmbed:** The method for fetching metadata is dependent on Spotify's web page structure and oEmbed API. If Spotify makes changes to these, the extension's core functionality may break until it is updated.
-*   **Search-Based Conversion:** The extension redirects to an Apple Music *search page*, not directly to the corresponding item. While the search is tailored to be as accurate as possible, it may not always lead to the correct result, especially for songs with generic titles or many remixes.
-*   **No Direct Library Integration:** This extension does not connect to your Apple Music account. It cannot add songs to your library or playlists directly.
+2. **Open Chrome Extensions**:
+   - Navigate to `chrome://extensions`
+   - Enable **"Developer mode"** (top-right toggle)
 
-## Future Improvements
+3. **Load the extension**:
+   - Click **"Load unpacked"**
+   - Select the cloned directory
 
-*   **Apple Music API Integration:** Utilize the official Apple Music API to find the exact corresponding track, album, or artist, providing a much more accurate conversion instead of a simple search.
-*   **OAuth for Apple Music:** Allow users to authenticate with their Apple Music account to enable features like "Add to Library" or "Add to Playlist" directly from the extension.
-*   **Podcast Support:** Extend functionality to also convert Spotify podcast and episode links.
-*   **Improved UI/UX:** Enhance the popup with a more detailed history of converted links and a more advanced settings page.
-*   **Smarter Country Detection:** Implement a more reliable method for detecting the user's country to ensure results from the correct Apple Music storefront.
+4. **Start using TuneSwap**! 🎉
 
-## License
+### From Chrome Web Store (Coming Soon)
+TuneSwap will be available on the Chrome Web Store soon for easy one-click installation.
 
-This project is licensed under the MIT License.
+## 🎯 Usage
+
+### Automatic Conversion
+1. Browse any website with Spotify links (Twitter, Reddit, blogs, etc.)
+2. Click any Spotify link
+3. TuneSwap automatically opens the corresponding Apple Music search
+4. Find your music instantly! 🎵
+
+### Manual Conversion
+- Right-click any Spotify link
+- Select "Convert to Apple Music" from context menu
+- Apple Music opens with optimized search results
+
+### Settings & Statistics
+- Click the TuneSwap icon in Chrome toolbar
+- View your conversion statistics
+- Adjust settings for optimal experience
+- Test the conversion functionality
+
+## 🌍 Supported Content Types
+
+TuneSwap handles all Spotify content types:
+
+- **🎵 Tracks**: `https://open.spotify.com/track/[ID]`
+- **💿 Albums**: `https://open.spotify.com/album/[ID]`
+- **👨‍🎤 Artists**: `https://open.spotify.com/artist/[ID]`
+- **📱 Playlists**: `https://open.spotify.com/playlist/[ID]`
+
+## 🗂️ Project Structure
+
+```
+tuneswap/
+├── manifest.json          # Extension configuration
+├── background.js          # Service worker (background tasks)
+├── content.js            # Content script (link interception)
+├── popup.html           # Popup interface
+├── popup.js             # Popup functionality
+├── diagnostic.js        # Debug utilities
+├── index.html          # Demo page
+├── tuneswap.svg        # Logo
+├── icons/              # Extension icons
+└── README.md           # This file
+```
+
+## ⚠️ Current Limitations
+
+- **Search-Based Results**: Redirects to Apple Music search (not direct links) for maximum compatibility
+- **No Account Integration**: Doesn't connect to your Apple Music account (yet!)
+- **Region Dependent**: Results quality varies by Apple Music region availability
+- **Metadata Dependent**: Accuracy depends on Spotify's available metadata
+
+## 🚀 Roadmap & Future Features
+
+### 🎯 Short Term
+- [ ] Chrome Web Store publication
+- [ ] Support for more regions/countries
+- [ ] Improved metadata extraction
+- [ ] Enhanced UI/UX
+
+### 🔮 Long Term
+- [ ] **Apple Music API Integration**: Direct links instead of searches
+- [ ] **Account Authentication**: Add songs directly to your Apple Music library
+- [ ] **Multi-Platform Support**: YouTube Music, Tidal, Amazon Music, Deezer
+- [ ] **Playlist Sync**: Full playlist conversion and syncing
+- [ ] **Browser Extensions**: Firefox, Safari, Edge support
+- [ ] **Mobile Apps**: iOS and Android companions
+- [ ] **Web App**: Standalone web version
+
+### 💎 Premium Features (Planned)
+- Unlimited conversions
+- Advanced analytics
+- Batch conversion
+- Cross-device sync
+- Priority support
+
+## 🛟 Troubleshooting
+
+### Extension Not Working?
+1. Check that TuneSwap is enabled in `chrome://extensions`
+2. Verify the extension has necessary permissions
+3. Try refreshing the webpage
+4. Check console for error messages (F12 → Console)
+
+### Links Not Converting?
+1. Ensure the link is a valid Spotify URL
+2. Check your internet connection
+3. Verify your selected country in TuneSwap settings
+4. Try the "Test Conversion" button in the popup
+
+### Need More Help?
+- Open an issue on GitHub
+- Check the diagnostic tools in the extension
+- Contact support at hello@tuneswap.app
+
+## 🤝 Contributing
+
+We welcome contributions! Here's how you can help:
+
+1. **🐛 Report Bugs**: Open an issue with detailed steps to reproduce
+2. **💡 Suggest Features**: Share your ideas for new functionality
+3. **🔧 Submit PRs**: Help improve the codebase
+4. **📖 Improve Docs**: Help make the documentation better
+5. **🌟 Spread the Word**: Share TuneSwap with other music lovers!
+
+### Development Setup
+```bash
+git clone https://github.com/yourusername/tuneswap.git
+cd tuneswap
+# Load in Chrome as unpacked extension
+# Make changes and reload extension to test
+```
+
+## 📄 License
 
 **MIT License**
 
-Copyright (c) 2025
+Copyright (c) 2025 Carlos Vidal
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -84,3 +196,13 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+<div align="center">
+
+**Made with ❤️ for music lovers everywhere**
+
+[🌐 Website](https://tuneswap.app) • [🐛 Issues](https://github.com/yourusername/tuneswap/issues) • [💬 Discussions](https://github.com/yourusername/tuneswap/discussions)
+
+</div>

@@ -1,253 +1,456 @@
 <!DOCTYPE html>
-<html lang="es">
-  <head>
+<html lang="en">
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Spotify to Apple Music Chrome Extension</title>
+    <title>TuneSwap - Demo & Test Page</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 361 361'><circle cx='180' cy='180' r='180' fill='%231DB954'/><text y='200' font-size='180' text-anchor='middle' x='180'>🎵</text></svg>" />
     <style>
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          sans-serif;
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 20px;
-        line-height: 1.6;
-        background-color: #f4f4f9;
-        color: #333;
-      }
-      .header {
-        text-align: center;
-        margin-bottom: 40px;
-        padding: 20px;
-        background: linear-gradient(135deg, #1db954, #1ed760);
-        color: white;
-        border-radius: 12px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-      }
-      .header h1 {
-        margin: 0;
-      }
-      .test-section {
-        background: #ffffff;
-        padding: 20px;
-        margin: 20px 0;
-        border-radius: 12px;
-        border-left: 5px solid #1db954;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-      }
-      .spotify-link {
-        display: inline-block;
-        background: #1db954;
-        color: white !important;
-        padding: 10px 18px;
-        text-decoration: none;
-        border-radius: 50px;
-        margin: 5px;
-        transition: all 0.3s ease;
-        font-weight: 500;
-      }
-      .spotify-link:hover {
-        background: #1aa34a;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      }
-      .instructions {
-        background: #e3f2fd;
-        padding: 20px;
-        border-radius: 12px;
-        margin: 20px 0;
-        border: 1px solid #bde0fe;
-      }
-      code {
-        background: #e9ecef;
-        padding: 3px 7px;
-        border-radius: 5px;
-        font-family: "Monaco", "Consolas", monospace;
-      }
-      footer {
-        text-align: center;
-        margin-top: 40px;
-        color: #777;
-      }
-      footer a {
-        color: #1db954;
-        text-decoration: none;
-      }
-      footer a:hover {
-        text-decoration: underline;
-      }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 40px 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            display: block;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1DB954, #1ed760);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .badges {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .badge {
+            background: #f0f0f0;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+        
+        .instructions {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .instructions h3 {
+            color: #1DB954;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        
+        .instructions ol {
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .test-section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            margin: 30px 0;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .test-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .test-section p {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+        
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .spotify-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: linear-gradient(135deg, #1DB954, #1ed760);
+            color: white !important;
+            padding: 15px 20px;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 1rem;
+            box-shadow: 0 3px 10px rgba(29, 185, 84, 0.3);
+        }
+        
+        .spotify-link:hover {
+            background: linear-gradient(135deg, #1aa34a, #17c653);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(29, 185, 84, 0.4);
+            color: white !important;
+        }
+        
+        .spotify-link:active {
+            transform: translateY(0);
+        }
+        
+        .status-indicator {
+            background: rgba(34, 197, 94, 0.1);
+            border: 2px solid #22c55e;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .status-indicator.error {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: #ef4444;
+        }
+        
+        .debug-info {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.9rem;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .footer a {
+            color: #1DB954;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        code {
+            background: #e9ecef;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .links-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+        }
     </style>
-  </head>
-  <body>
-    <div class="header">
-      <h1>🎵 Página de Demostración</h1>
-      <p>Spotify to Apple Music Extension</p>
-    </div>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="tuneswap.svg" alt="TuneSwap Logo" class="logo" />
+            <h1>TuneSwap</h1>
+            <p>Demo & Test Page</p>
+            <div class="badges">
+                <span class="badge">🎵 Spotify → Apple Music</span>
+                <span class="badge">⚡ One-Click Conversion</span>
+                <span class="badge">🌍 Global Support</span>
+            </div>
+        </div>
 
-    <div class="instructions">
-      <h3>📋 Instrucciones</h3>
-      <ol>
-        <li>
-          Asegúrate de tener la extensión
-          <strong>Spotify to Apple Music</strong> instalada y habilitada.
-        </li>
-        <li>Haz clic en cualquiera de los enlaces de Spotify de abajo.</li>
-        <li>
-          La extensión debería interceptar el clic y abrir una búsqueda en Apple
-          Music.
-        </li>
-        <li>
-          También puedes probar haciendo clic derecho → "Convertir a Apple
-          Music".
-        </li>
-      </ol>
-    </div>
+        <div class="status-indicator" id="extensionStatus">
+            <strong>🔍 Checking TuneSwap Extension...</strong>
+            <p>Please wait while we detect if the extension is installed and working.</p>
+        </div>
 
-    <div class="test-section">
-      <h3>🎵 Canciones Populares</h3>
-      <p>
-        Estos enlaces deberían convertirse en búsquedas de canciones específicas
-        en Apple Music:
-      </p>
-      <a
-        href="https://open.spotify.com/track/4PTG3Z6ehGkBFwjybzWkR8"
-        class="spotify-link"
-        >🎵 Never Gonna Give You Up - Rick Astley</a
-      >
-      <a
-        href="https://open.spotify.com/track/7qiZfU4dY1lWllzX7mPBI3"
-        class="spotify-link"
-        >🎵 Shape of You - Ed Sheeran</a
-      >
-      <a
-        href="https://open.spotify.com/track/0VjIjW4GlUZAMYd2vXMi3b"
-        class="spotify-link"
-        >🎵 Blinding Lights - The Weeknd</a
-      >
-      <a
-        href="https://open.spotify.com/track/4Dvkj6JhhA12EX05fT7y2e"
-        class="spotify-link"
-        >🎵 As It Was - Harry Styles</a
-      >
-      <a
-        href="https://open.spotify.com/track/1BxfuPKGuaTgP7aM0Bbdwr"
-        class="spotify-link"
-        >🎵 Cruel Summer - Taylor Swift</a
-      >
-      <a
-        href="https://open.spotify.com/track/6habFhsOp2NvshLv26DqMb"
-        class="spotify-link"
-        >🎵 Despacito - Luis Fonsi ft. Daddy Yankee</a
-      >
-    </div>
+        <div class="instructions">
+            <h3>📋 How to Test TuneSwap</h3>
+            <ol>
+                <li>Make sure you have the <strong>TuneSwap extension</strong> installed and enabled in Chrome</li>
+                <li>Click any Spotify link below to test the conversion</li>
+                <li>TuneSwap should automatically open Apple Music with search results</li>
+                <li>You can also right-click links and select <strong>"Convert to Apple Music"</strong></li>
+                <li>Check the browser console (F12) to see detailed conversion logs</li>
+            </ol>
+        </div>
 
-    <div class="test-section">
-      <h3>💿 Álbumes</h3>
-      <p>
-        Estos enlaces deberían convertirse en búsquedas de álbumes completos:
-      </p>
-      <a
-        href="https://open.spotify.com/album/4yP0hdKOZPNshxUOjY0cZj"
-        class="spotify-link"
-        >💿 After Hours - The Weeknd</a
-      >
-      <a
-        href="https://open.spotify.com/album/3T4tUhGYeRNVUGevb0wThu"
-        class="spotify-link"
-        >💿 ÷ (Divide) - Ed Sheeran</a
-      >
-      <a
-        href="https://open.spotify.com/album/0ETFjACtuP2ADo6LFhL6HN"
-        class="spotify-link"
-        >💿 Abbey Road - The Beatles</a
-      >
-    </div>
+        <div class="test-section">
+            <h3>🎵 Popular Tracks</h3>
+            <p>These links should convert to Apple Music song searches with accurate results:</p>
+            <div class="links-grid">
+                <a href="https://open.spotify.com/track/4PTG3Z6ehGkBFwjybzWkR8" class="spotify-link">
+                    🎵 Never Gonna Give You Up - Rick Astley
+                </a>
+                <a href="https://open.spotify.com/track/7qiZfU4dY1lWllzX7mPBI3" class="spotify-link">
+                    🎵 Blinding Lights - The Weeknd
+                </a>
+                <a href="https://open.spotify.com/track/6habFhsOp2NvshLv26DqMb" class="spotify-link">
+                    🎵 Shape of You - Ed Sheeran
+                </a>
+                <a href="https://open.spotify.com/track/4Dvkj6JhhA12EX05fT7y2e" class="spotify-link">
+                    🎵 As It Was - Harry Styles
+                </a>
+                <a href="https://open.spotify.com/track/1BxfuPKGuaTgP7aM0Bbdwr" class="spotify-link">
+                    🎵 Cruel Summer - Taylor Swift
+                </a>
+                <a href="https://open.spotify.com/track/0VjIjW4GlUZAMYd2vXMi3b" class="spotify-link">
+                    🎵 Anti-Hero - Taylor Swift
+                </a>
+            </div>
+        </div>
 
-    <div class="test-section">
-      <h3>👨‍🎤 Artistas</h3>
-      <p>
-        Estos enlaces deberían abrir páginas de búsqueda de artistas en Apple
-        Music:
-      </p>
-      <a
-        href="https://open.spotify.com/artist/1dfeR4HaWDbWqFHLkxsg1d"
-        class="spotify-link"
-        >👨‍🎤 Queen</a
-      >
-      <a
-        href="https://open.spotify.com/artist/1Xyo4u8uXC1ZmMpatF05PJ"
-        class="spotify-link"
-        >👨‍🎤 The Weeknd</a
-      >
-      <a
-        href="https://open.spotify.com/artist/6eUKZXaKkcviH0Ku9w2n3V"
-        class="spotify-link"
-        >👨‍🎤 Ed Sheeran</a
-      >
-      <a
-        href="https://open.spotify.com/artist/3TVXtAsR1Inumwj472S9r4"
-        class="spotify-link"
-        >👨‍🎤 Drake</a
-      >
-    </div>
+        <div class="test-section">
+            <h3>💿 Albums</h3>
+            <p>Test album conversion to Apple Music search results:</p>
+            <div class="links-grid">
+                <a href="https://open.spotify.com/album/4yP0hdKOZPNshxUOjY0cZj" class="spotify-link">
+                    💿 After Hours - The Weeknd
+                </a>
+                <a href="https://open.spotify.com/album/3T4tUhGYeRNVUGevb0wThu" class="spotify-link">
+                    💿 ÷ (Divide) - Ed Sheeran
+                </a>
+                <a href="https://open.spotify.com/album/0ETFjACtuP2ADo6LFhL6HN" class="spotify-link">
+                    💿 Abbey Road - The Beatles
+                </a>
+                <a href="https://open.spotify.com/album/1A2GTWGtFfWp7KSQTwWOyo" class="spotify-link">
+                    💿 Folklore - Taylor Swift
+                </a>
+            </div>
+        </div>
 
-    <div class="test-section">
-      <h3>📱 Playlists</h3>
-      <p>
-        Estos enlaces deberían convertirse en búsquedas relacionadas con las
-        playlists:
-      </p>
-      <a
-        href="https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M"
-        class="spotify-link"
-        >📱 Today's Top Hits</a
-      >
-      <a
-        href="https://open.spotify.com/playlist/37i9dQZF1DX0XUsuxWHRQd"
-        class="spotify-link"
-        >📱 RapCaviar</a
-      >
-      <a
-        href="https://open.spotify.com/playlist/37i9dQZF1DWXRqgorJj26U"
-        class="spotify-link"
-        >📱 Rock Classics</a
-      >
-    </div>
+        <div class="test-section">
+            <h3>👨‍🎤 Artists</h3>
+            <p>These should open Apple Music artist search pages:</p>
+            <div class="links-grid">
+                <a href="https://open.spotify.com/artist/1dfeR4HaWDbWqFHLkxsg1d" class="spotify-link">
+                    👨‍🎤 Queen
+                </a>
+                <a href="https://open.spotify.com/artist/1Xyo4u8uXC1ZmMpatF05PJ" class="spotify-link">
+                    👨‍🎤 The Weeknd
+                </a>
+                <a href="https://open.spotify.com/artist/6eUKZXaKkcviH0Ku9w2n3V" class="spotify-link">
+                    👨‍🎤 Ed Sheeran
+                </a>
+                <a href="https://open.spotify.com/artist/06HL4z0CvFAxyc27GXpf02" class="spotify-link">
+                    👨‍🎤 Taylor Swift
+                </a>
+                <a href="https://open.spotify.com/artist/3TVXtAsR1Inumwj472S9r4" class="spotify-link">
+                    👨‍🎤 Drake
+                </a>
+                <a href="https://open.spotify.com/artist/4dpARuHxo51G3z768sgnrY" class="spotify-link">
+                    👨‍🎤 Adele
+                </a>
+            </div>
+        </div>
 
-    <div class="test-section">
-      <h3>🧪 Casos Especiales</h3>
-      <p>Enlaces para probar casos límite y manejo de errores:</p>
-      <a
-        href="https://open.spotify.com/track/invalidtrackid123"
-        class="spotify-link"
-        >❌ Enlace inválido</a
-      >
-      <a
-        href="https://spotify.com/track/4iV5W9uYEdYUVa79Axb7Rh"
-        class="spotify-link"
-        >🔄 Enlace sin 'open'</a
-      >
-    </div>
+        <div class="test-section">
+            <h3>📱 Playlists</h3>
+            <p>Popular playlists for testing conversion logic:</p>
+            <div class="links-grid">
+                <a href="https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M" class="spotify-link">
+                    📱 Today's Top Hits
+                </a>
+                <a href="https://open.spotify.com/playlist/37i9dQZF1DX0XUsuxWHRQd" class="spotify-link">
+                    📱 RapCaviar
+                </a>
+                <a href="https://open.spotify.com/playlist/37i9dQZF1DWXRqgorJj26U" class="spotify-link">
+                    📱 Rock Classics
+                </a>
+                <a href="https://open.spotify.com/playlist/37i9dQZF1DX4dyzvuaRJ0n" class="spotify-link">
+                    📱 Mood Booster
+                </a>
+            </div>
+        </div>
 
-    <footer>
-      <p>
-        Creado para el repositorio
-        <a
-          href="https://github.com/carlosvidal/spotify-to-apple-music"
-          target="_blank"
-          >Spotify to Apple Music</a
-        >.
-      </p>
-    </footer>
+        <div class="test-section">
+            <h3>🧪 Edge Cases</h3>
+            <p>Test error handling and edge cases:</p>
+            <div class="links-grid">
+                <a href="https://open.spotify.com/track/invalidtrackid123" class="spotify-link">
+                    ❌ Invalid Track ID
+                </a>
+                <a href="https://spotify.com/track/4PTG3Z6ehGkBFwjybzWkR8" class="spotify-link">
+                    🔄 Link without 'open'
+                </a>
+                <a href="https://open.spotify.com/episode/invalidpodcastid" class="spotify-link">
+                    🎙️ Unsupported Content Type
+                </a>
+            </div>
+        </div>
+
+        <div class="debug-info" id="debugInfo">
+            <strong>🐛 Debug Information:</strong>
+            <div id="debugContent">
+                <p>Click any Spotify link above to see conversion details here...</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>
+                <strong>TuneSwap</strong> - Created for seamless music platform switching<br>
+                <a href="https://github.com/carlosvidal/tuneswap" target="_blank">📦 GitHub Repository</a> •
+                <a href="https://tuneswap.app" target="_blank">🌐 Official Website</a> •
+                <a href="mailto:hello@tuneswap.app">📧 Contact</a>
+            </p>
+            <p style="margin-top: 15px; color: #666; font-size: 0.9rem;">
+                Made with ❤️ for music lovers everywhere
+            </p>
+        </div>
+    </div>
 
     <script>
-      console.log(
-        "Página de demostración cargada. Lista para probar la extensión."
-      );
-      console.log(
-        "Enlaces de Spotify encontrados:",
-        document.querySelectorAll('a[href*="spotify.com"]').length
-      );
+        console.log('🎵 TuneSwap Demo Page Loaded');
+        
+        // Debug logging
+        const debugInfo = document.getElementById('debugContent');
+        const originalLog = console.log;
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            
+            // Show TuneSwap related logs in the debug section
+            const message = args.join(' ');
+            if (message.includes('TuneSwap') || message.includes('Spotify') || message.includes('🎵') || message.includes('✅') || message.includes('❌')) {
+                const logEntry = document.createElement('div');
+                logEntry.style.cssText = 'margin: 5px 0; padding: 5px; background: #f8f9fa; border-radius: 4px; font-size: 0.8rem;';
+                logEntry.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+                debugInfo.appendChild(logEntry);
+                
+                // Keep only last 10 entries
+                if (debugInfo.children.length > 10) {
+                    debugInfo.removeChild(debugInfo.firstChild);
+                }
+            }
+        };
+        
+        // Check if TuneSwap extension is loaded
+        function checkExtensionStatus() {
+            const statusEl = document.getElementById('extensionStatus');
+            const spotifyLinks = document.querySelectorAll('a[href*="spotify.com"]');
+            
+            console.log(`🔍 Found ${spotifyLinks.length} Spotify links on this page`);
+            
+            // Listen for TuneSwap extension messages
+            window.addEventListener('message', function(event) {
+                if (event.data && event.data.type === 'TUNESWAP_ACTIVE') {
+                    statusEl.className = 'status-indicator';
+                    statusEl.innerHTML = `
+                        <strong>✅ TuneSwap Extension Active!</strong>
+                        <p>Extension is loaded and ready to convert Spotify links.</p>
+                    `;
+                }
+            });
+            
+            // Check for extension after a delay
+            setTimeout(() => {
+                if (statusEl.innerHTML.includes('Checking')) {
+                    statusEl.className = 'status-indicator error';
+                    statusEl.innerHTML = `
+                        <strong>⚠️ TuneSwap Extension Not Detected</strong>
+                        <p>Make sure the extension is installed and enabled in <code>chrome://extensions</code></p>
+                    `;
+                }
+            }, 3000);
+        }
+        
+        // Track clicks on Spotify links
+        document.addEventListener('click', function(e) {
+            if (e.target.href && e.target.href.includes('spotify.com')) {
+                console.log('🎵 Spotify link clicked:', e.target.href);
+                console.log('🔄 TuneSwap should intercept this click...');
+                
+                const debugEntry = document.createElement('div');
+                debugEntry.style.cssText = 'margin: 10px 0; padding: 10px; background: #e3f2fd; border-left: 4px solid #1976d2; border-radius: 4px;';
+                debugEntry.innerHTML = `
+                    <strong>🎯 Link Clicked:</strong><br>
+                    <code>${e.target.href}</code><br>
+                    <small>Waiting for TuneSwap conversion...</small>
+                `;
+                debugInfo.appendChild(debugEntry);
+            }
+        });
+        
+        // Initialize
+        checkExtensionStatus();
+        
+        // Dispatch event to let extension know this is a test page
+        window.postMessage({ type: 'TUNESWAP_TEST_PAGE' }, '*');
     </script>
-  </body>
+</body>
 </html>

@@ -1,8 +1,8 @@
-// background.js - Service Worker para la extensión
+// background.js - TuneSwap Service Worker
 
-console.log('🚀 Service worker iniciando...');
+console.log('🚀 TuneSwap: Service worker starting...');
 
-// Verificar APIs disponibles al iniciar
+// Check available APIs on startup
 function checkAPIs() {
     const available = {
         runtime: !!chrome?.runtime,
@@ -12,73 +12,74 @@ function checkAPIs() {
         scripting: !!chrome?.scripting
     };
     
-    console.log('📋 APIs disponibles:', available);
+    console.log('📋 TuneSwap: Available APIs:', available);
     return available;
 }
 
 const apis = checkAPIs();
 
-// Manejar instalación de la extensión
+// Handle extension installation
 if (apis.runtime) {
     chrome.runtime.onInstalled.addListener(async (details) => {
-        console.log('📦 Extensión instalada:', details.reason);
+        console.log('📦 TuneSwap: Extension installed:', details.reason);
         
         try {
             if (details.reason === 'install') {
-                // Configurar valores por defecto
+                // Set default values
                 if (apis.storage) {
                     await chrome.storage.sync.set({
                         enabled: true,
                         openInNewTab: true,
-                        showNotifications: true
+                        showNotifications: true,
+                        countryCode: 'us' // Default to US, will be auto-detected
                     });
-                    console.log('✅ Configuración inicial guardada');
+                    console.log('✅ TuneSwap: Initial configuration saved');
                 }
                 
-                // Crear menú contextual
+                // Create context menu
                 if (apis.contextMenus) {
                     chrome.contextMenus.create({
                         id: 'convertSpotifyLink',
-                        title: 'Convertir a Apple Music',
+                        title: 'Convert to Apple Music',
                         contexts: ['link'],
                         targetUrlPatterns: [
                             '*://open.spotify.com/*',
                             '*://spotify.com/*'
                         ]
                     });
-                    console.log('✅ Menú contextual creado');
+                    console.log('✅ TuneSwap: Context menu created');
                 }
             }
         } catch (error) {
-            console.error('❌ Error en instalación:', error);
+            console.error('❌ TuneSwap: Error during installation:', error);
         }
     });
 }
 
-// Manejar mensajes del content script
+// Handle messages from content script
 if (apis.runtime) {
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-        console.log('📨 Mensaje recibido:', request.action);
+        console.log('📨 TuneSwap: Message received:', request.action);
         
         try {
             switch(request.action) {
                 case 'convertUrl':
                     handleUrlConversion(request.url, sender, sendResponse);
-                    return true; // Mantener canal abierto
+                    return true; // Keep channel open
                     
                 case 'getSettings':
                     if (apis.storage) {
-                        chrome.storage.sync.get(['enabled', 'openInNewTab', 'showNotifications'])
+                        chrome.storage.sync.get(['enabled', 'openInNewTab', 'showNotifications', 'countryCode'])
                             .then(result => {
-                                console.log('⚙️ Configuración enviada:', result);
+                                console.log('⚙️ TuneSwap: Settings sent:', result);
                                 sendResponse(result);
                             })
                             .catch(error => {
-                                console.error('❌ Error obteniendo configuración:', error);
+                                console.error('❌ TuneSwap: Error getting settings:', error);
                                 sendResponse({error: error.message});
                             });
                     } else {
-                        sendResponse({error: 'Storage API no disponible'});
+                        sendResponse({error: 'Storage API not available'});
                     }
                     return true;
                     
@@ -86,15 +87,15 @@ if (apis.runtime) {
                     if (apis.storage) {
                         chrome.storage.sync.set(request.settings)
                             .then(() => {
-                                console.log('✅ Configuración guardada:', request.settings);
+                                console.log('✅ TuneSwap: Settings saved:', request.settings);
                                 sendResponse({success: true});
                             })
                             .catch(error => {
-                                console.error('❌ Error guardando configuración:', error);
+                                console.error('❌ TuneSwap: Error saving settings:', error);
                                 sendResponse({error: error.message});
                             });
                     } else {
-                        sendResponse({error: 'Storage API no disponible'});
+                        sendResponse({error: 'Storage API not available'});
                     }
                     return true;
                     
@@ -102,52 +103,56 @@ if (apis.runtime) {
                     updateConversionStats(sendResponse);
                     return true;
                     
+                case 'clearStats':
+                    clearStats().then(result => sendResponse(result));
+                    return true;
+                    
                 default:
-                    console.warn('⚠️ Acción no reconocida:', request.action);
-                    sendResponse({error: 'Acción no reconocida'});
+                    console.warn('⚠️ TuneSwap: Unrecognized action:', request.action);
+                    sendResponse({error: 'Unrecognized action'});
             }
         } catch (error) {
-            console.error('❌ Error en message listener:', error);
+            console.error('❌ TuneSwap: Error in message listener:', error);
             sendResponse({error: error.message});
         }
     });
 }
 
-// Función para manejar conversión de URL
+// Function to handle URL conversion
 async function handleUrlConversion(spotifyUrl, sender, sendResponse) {
     try {
-        console.log('🔄 Procesando conversión:', spotifyUrl);
+        console.log('🔄 TuneSwap: Processing conversion:', spotifyUrl);
         
         if (!apis.storage) {
-            sendResponse({error: 'Storage API no disponible'});
+            sendResponse({error: 'Storage API not available'});
             return;
         }
         
-        // Verificar si la extensión está habilitada
+        // Check if extension is enabled
         const settings = await chrome.storage.sync.get(['enabled']);
         if (!settings.enabled) {
-            console.log('⏸️ Extensión deshabilitada');
-            sendResponse({error: 'Extensión deshabilitada'});
+            console.log('⏸️ TuneSwap: Extension disabled');
+            sendResponse({error: 'Extension disabled'});
             return;
         }
 
-        // Actualizar estadísticas
+        // Update statistics
         await updateConversionStats();
         
-        console.log('✅ Conversión procesada exitosamente');
+        console.log('✅ TuneSwap: Conversion processed successfully');
         sendResponse({success: true});
         
     } catch (error) {
-        console.error('❌ Error en conversión:', error);
+        console.error('❌ TuneSwap: Error in conversion:', error);
         sendResponse({error: error.message});
     }
 }
 
-// Función para actualizar estadísticas de conversión
+// Function to update conversion statistics
 async function updateConversionStats(sendResponse = null) {
     try {
         if (!apis.storage) {
-            if (sendResponse) sendResponse({error: 'Storage API no disponible'});
+            if (sendResponse) sendResponse({error: 'Storage API not available'});
             return;
         }
         
@@ -162,79 +167,80 @@ async function updateConversionStats(sendResponse = null) {
         };
         
         await chrome.storage.local.set(newStats);
-        console.log('📊 Estadísticas actualizadas:', newStats);
+        console.log('📊 TuneSwap: Statistics updated:', newStats);
         
         if (sendResponse) {
             sendResponse({success: true, stats: newStats});
         }
         
     } catch (error) {
-        console.error('❌ Error actualizando estadísticas:', error);
+        console.error('❌ TuneSwap: Error updating statistics:', error);
         if (sendResponse) {
             sendResponse({error: error.message});
         }
     }
 }
 
-// Configurar menú contextual (solo si la API está disponible)
+// Set up context menu (only if API is available)
 if (apis.contextMenus) {
     chrome.contextMenus.onClicked.addListener(async (info, tab) => {
-        console.log('🖱️ Click en menú contextual:', info.menuItemId);
+        console.log('🖱️ TuneSwap: Context menu click:', info.menuItemId);
         
         if (info.menuItemId === 'convertSpotifyLink' && info.linkUrl) {
             try {
-                // Intentar enviar mensaje al content script
+                // Try to send message to content script
                 if (apis.tabs) {
                     await chrome.tabs.sendMessage(tab.id, {
                         action: 'convertLink',
                         url: info.linkUrl
                     });
-                    console.log('✅ Mensaje enviado al content script');
+                    console.log('✅ TuneSwap: Message sent to content script');
                 } else {
-                    throw new Error('Tabs API no disponible');
+                    throw new Error('Tabs API not available');
                 }
             } catch (error) {
-                console.error('❌ Error en menú contextual:', error);
+                console.error('❌ TuneSwap: Error in context menu:', error);
                 
-                // Fallback: abrir directamente en Apple Music
+                // Fallback: open Apple Music directly
                 try {
-                    const searchUrl = 'https://music.apple.com/pe/search';
+                    const searchUrl = 'https://music.apple.com/us/search';
                     await chrome.tabs.create({url: searchUrl});
-                    console.log('🔄 Fallback: abriendo Apple Music');
+                    console.log('🔄 TuneSwap: Fallback - opening Apple Music');
                 } catch (fallbackError) {
-                    console.error('❌ Error en fallback:', fallbackError);
+                    console.error('❌ TuneSwap: Error in fallback:', fallbackError);
                 }
             }
         }
     });
 } else {
-    console.warn('⚠️ contextMenus API no disponible');
+    console.warn('⚠️ TuneSwap: contextMenus API not available');
 }
 
-// Función para limpiar estadísticas
+// Function to clear statistics
 async function clearStats() {
     try {
         if (apis.storage) {
             await chrome.storage.local.clear();
-            console.log('🗑️ Estadísticas limpiadas');
+            console.log('🗑️ TuneSwap: Statistics cleared');
             return {success: true};
         } else {
-            throw new Error('Storage API no disponible');
+            throw new Error('Storage API not available');
         }
     } catch (error) {
-        console.error('❌ Error limpiando estadísticas:', error);
+        console.error('❌ TuneSwap: Error clearing statistics:', error);
         return {error: error.message};
     }
 }
 
-// Función para verificar estado de la extensión
+// Function to verify extension status
 function getExtensionStatus() {
     return {
+        name: 'TuneSwap',
         apis: apis,
         timestamp: new Date().toISOString(),
         version: chrome.runtime.getManifest().version
     };
 }
 
-console.log('✅ Service worker configurado correctamente');
-console.log('📋 Estado de la extensión:', getExtensionStatus());
+console.log('✅ TuneSwap: Service worker configured successfully');
+console.log('📋 TuneSwap: Extension status:', getExtensionStatus());
