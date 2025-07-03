@@ -186,15 +186,18 @@ async function testConversion() {
         const titleMatch = html.match(/<title>([^<]+)<\/title>/);
         let title = titleMatch ? titleMatch[1].replace(' | Spotify', '') : 'Never Gonna Give You Up';
         
-        // Clean title for optimal search
-        title = title
-            .replace(/\s*[\(\[].*?[\)\]]/g, '') // Remove parentheses
-            .replace(/\s*(feat|ft|featuring)\.?\s+.*/gi, '') // Remove featuring
-            .replace(/\s*-\s*.*$/, '') // Remove everything after dash
-            .toLowerCase()
-            .replace(/[^\w\s]/g, ' ')
-            .replace(/\s+/g, ' ')
-            .trim();
+        // Clean title for optimal search (same logic as content script)
+        // Remove content in parentheses/brackets
+        title = title.replace(/\s*[\(\[].*?[\)\]]/g, '');
+        
+        // Remove featuring/feat/ft
+        title = title.replace(/\s*(feat\.?|ft\.?|featuring)\s+.*/gi, '');
+        
+        // Only remove specific remix/version info after dash, keep titles like "Anti-Hero"
+        title = title.replace(/\s*-\s*(remix|version|edit|mix|instrumental|acoustic|live|radio|explicit|clean|remaster|deluxe).*$/gi, '');
+        
+        // Minimal cleanup - preserve hyphens in titles
+        title = title.replace(/\s+/g, ' ').trim();
         
         console.log('🎵 TuneSwap: Extracted and cleaned title:', title);
         console.log('🌍 TuneSwap: Using country:', countryCode);

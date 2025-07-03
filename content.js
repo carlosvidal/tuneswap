@@ -232,6 +232,34 @@
         return 'us';
     }
 
+    // Function to intelligently clean song titles
+    function cleanSongTitle(title) {
+        console.log('🧹 TuneSwap: Original title:', title);
+        
+        let cleanTitle = title;
+        
+        // Remove content in parentheses/brackets (remixes, versions, etc.)
+        cleanTitle = cleanTitle.replace(/\s*[\(\[].*?[\)\]]/g, '');
+        console.log('🧹 TuneSwap: After removing brackets:', cleanTitle);
+        
+        // Remove featuring/feat/ft but be careful with hyphens
+        cleanTitle = cleanTitle.replace(/\s*(feat\.?|ft\.?|featuring)\s+.*/gi, '');
+        console.log('🧹 TuneSwap: After removing featuring:', cleanTitle);
+        
+        // Only remove content after dash if it looks like artist info or remix info
+        // Common patterns: "Song - Artist", "Song - Remix", "Song - Version"
+        // But keep hyphens that are part of the actual title like "Anti-Hero"
+        const dashPattern = /\s*-\s*(remix|version|edit|mix|instrumental|acoustic|live|radio|explicit|clean|remaster|deluxe).*$/gi;
+        cleanTitle = cleanTitle.replace(dashPattern, '');
+        console.log('🧹 TuneSwap: After removing remix/version info:', cleanTitle);
+        
+        // Remove extra whitespace
+        cleanTitle = cleanTitle.trim();
+        
+        console.log('🧹 TuneSwap: Final cleaned title:', cleanTitle);
+        return cleanTitle;
+    }
+
     // Function to create Apple Music search URL
     async function createAppleMusicSearchUrl(metadata) {
         try {
@@ -239,20 +267,21 @@
             
             switch(metadata.type) {
                 case 'track':
-                    // For tracks, prioritize just the title if very specific
                     if (metadata.title && metadata.title.length > 0) {
-                        // Clean title of special characters and "feat", "ft", etc.
-                        let cleanTitle = metadata.title
-                            .replace(/\s*[\(\[].*?[\)\]]/g, '') // Remove parentheses and brackets
-                            .replace(/\s*(feat|ft|featuring)\.?\s+.*/gi, '') // Remove featuring
-                            .replace(/\s*-\s*.*$/, '') // Remove everything after dash
-                            .trim();
+                        // Use intelligent title cleaning
+                        let cleanTitle = cleanSongTitle(metadata.title);
                         
+                        // Use just the clean title for most cases
                         searchQuery = cleanTitle;
                         
-                        // Only add artist if title is very short or generic
-                        if (cleanTitle.length < 15 && metadata.artist) {
+                        // Only add artist if title is very short, generic, or ambiguous
+                        const shortTitleThreshold = 8;
+                        const genericWords = ['love', 'song', 'music', 'dance', 'party', 'night', 'day'];
+                        const isGeneric = genericWords.some(word => cleanTitle.toLowerCase().includes(word));
+                        
+                        if ((cleanTitle.length < shortTitleThreshold || isGeneric) && metadata.artist) {
                             searchQuery = `${metadata.artist} ${cleanTitle}`.trim();
+                            console.log('🎯 TuneSwap: Added artist due to short/generic title');
                         }
                     }
                     break;
@@ -273,10 +302,8 @@
                 return await createFallbackUrl();
             }
 
-            // Clean and simplify search
+            // Minimal cleaning for search - preserve hyphens and most characters
             searchQuery = searchQuery
-                .toLowerCase()
-                .replace(/[^\w\s]/g, ' ') // Replace special characters with spaces
                 .replace(/\s+/g, ' ') // Multiple spaces to single space
                 .trim();
 
