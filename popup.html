@@ -1,348 +1,351 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TuneSwap</title>
     <style>
-        body {
-            width: 350px;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            margin: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            overflow-x: hidden;
-        }
+      body {
+        width: 350px;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        margin: 0;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        overflow-x: hidden;
+      }
 
-        .header {
-            text-align: center;
-            padding: 25px 20px 20px;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        }
+      .header {
+        text-align: center;
+        padding: 25px 20px 20px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      }
 
-        .logo {
-            width: 40px;
-            height: 40px;
-            margin: 0 auto 10px;
-            display: block;
-            filter: brightness(0) invert(1);
-        }
+      .logo {
+        width: 40px;
+        height: 40px;
+        margin: 0 auto 10px;
+        display: block;
+        filter: brightness(0) invert(1);
+      }
 
-        .header h1 {
-            font-size: 22px;
-            margin: 0 0 5px 0;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-        }
+      .header h1 {
+        font-size: 22px;
+        margin: 0 0 5px 0;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+      }
 
-        .header p {
-            font-size: 13px;
-            opacity: 0.8;
-            margin: 0;
-        }
+      .header p {
+        font-size: 13px;
+        opacity: 0.8;
+        margin: 0;
+      }
 
-        .content {
-            padding: 20px;
-        }
+      .content {
+        padding: 20px;
+      }
 
-        .current-page {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 20px;
-            font-size: 12px;
-            backdrop-filter: blur(5px);
-        }
+      .current-page {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 20px;
+        font-size: 12px;
+        backdrop-filter: blur(5px);
+      }
 
-        .current-page-title {
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
+      .current-page-title {
+        font-weight: 600;
+        margin-bottom: 5px;
+      }
 
-        .spotify-links {
-            color: #1DB954;
-            font-weight: 600;
-        }
+      .spotify-links {
+        color: #1db954;
+        font-weight: 600;
+      }
 
-        .stats {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 20px;
-            backdrop-filter: blur(10px);
-        }
+      .stats {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+        backdrop-filter: blur(10px);
+      }
 
-        .stats-title {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            text-align: center;
-        }
+      .stats-title {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 12px;
+        text-align: center;
+      }
 
-        .stat-item {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 13px;
-        }
+      .stat-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        font-size: 13px;
+      }
 
-        .stat-item:last-child {
-            margin-bottom: 0;
-        }
+      .stat-item:last-child {
+        margin-bottom: 0;
+      }
 
-        .stat-value {
-            font-weight: 600;
-        }
+      .stat-value {
+        font-weight: 600;
+      }
 
-        .controls {
-            margin-bottom: 20px;
-        }
+      .controls {
+        margin-bottom: 20px;
+      }
 
-        .controls-title {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 15px;
-            text-align: center;
-        }
+      .controls-title {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 15px;
+        text-align: center;
+      }
 
-        .toggle-container {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 12px;
-            font-size: 13px;
-        }
+      .toggle-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        font-size: 13px;
+      }
 
-        .toggle {
-            position: relative;
-            width: 44px;
-            height: 24px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
-            cursor: pointer;
-            transition: background 0.3s;
-            flex-shrink: 0;
-        }
+      .toggle {
+        position: relative;
+        width: 44px;
+        height: 24px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        cursor: pointer;
+        transition: background 0.3s;
+        flex-shrink: 0;
+      }
 
-        .toggle.active {
-            background: #34C759;
-        }
+      .toggle.active {
+        background: #34c759;
+      }
 
-        .toggle-slider {
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            width: 20px;
-            height: 20px;
-            background: white;
-            border-radius: 50%;
-            transition: transform 0.3s;
-        }
+      .toggle-slider {
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 20px;
+        height: 20px;
+        background: white;
+        border-radius: 50%;
+        transition: transform 0.3s;
+      }
 
-        .toggle.active .toggle-slider {
-            transform: translateX(20px);
-        }
+      .toggle.active .toggle-slider {
+        transform: translateX(20px);
+      }
 
-        .country-selector {
-            margin-top: 15px;
-        }
+      .country-selector {
+        margin-top: 15px;
+      }
 
-        .country-selector label {
-            display: block;
-            margin-bottom: 6px;
-            font-size: 13px;
-            font-weight: 500;
-        }
+      .country-selector label {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 13px;
+        font-weight: 500;
+      }
 
-        .country-selector select {
-            width: 100%;
-            padding: 8px 10px;
-            border-radius: 6px;
-            border: 1px solid rgba(255,255,255,0.3);
-            background: rgba(255,255,255,0.1);
-            color: white;
-            font-size: 13px;
-            backdrop-filter: blur(5px);
-        }
+      .country-selector select {
+        width: 100%;
+        padding: 8px 10px;
+        border-radius: 6px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        font-size: 13px;
+        backdrop-filter: blur(5px);
+      }
 
-        .country-selector select option {
-            background: #333;
-            color: white;
-        }
+      .country-selector select option {
+        background: #333;
+        color: white;
+      }
 
-        .actions {
-            margin-bottom: 20px;
-        }
+      .actions {
+        margin-bottom: 20px;
+      }
 
-        .actions-title {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            text-align: center;
-        }
+      .actions-title {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 12px;
+        text-align: center;
+      }
 
-        .button {
-            width: 100%;
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            color: white;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-bottom: 8px;
-            backdrop-filter: blur(5px);
-        }
+      .button {
+        width: 100%;
+        padding: 12px;
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        color: white;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-bottom: 8px;
+        backdrop-filter: blur(5px);
+      }
 
-        .button:hover {
-            background: rgba(255, 255, 255, 0.25);
-            transform: translateY(-1px);
-        }
+      .button:hover {
+        background: rgba(255, 255, 255, 0.25);
+        transform: translateY(-1px);
+      }
 
-        .button:active {
-            transform: translateY(0);
-        }
+      .button:active {
+        transform: translateY(0);
+      }
 
-        .button:last-child {
-            margin-bottom: 0;
-        }
+      .button:last-child {
+        margin-bottom: 0;
+      }
 
-        .footer {
-            text-align: center;
-            font-size: 11px;
-            opacity: 0.7;
-            padding: 15px 20px 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
+      .footer {
+        text-align: center;
+        font-size: 11px;
+        opacity: 0.7;
+        padding: 15px 20px 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+      }
 
-        .footer a {
-            color: rgba(255, 255, 255, 0.9);
-            text-decoration: none;
-        }
+      .footer a {
+        color: rgba(255, 255, 255, 0.9);
+        text-decoration: none;
+      }
 
-        .footer a:hover {
-            text-decoration: underline;
-        }
+      .footer a:hover {
+        text-decoration: underline;
+      }
 
-        .loading {
-            text-align: center;
-            padding: 20px;
-        }
+      .loading {
+        text-align: center;
+        padding: 20px;
+      }
 
-        /* Temp message styles */
-        #tempMessage {
-            position: fixed;
-            top: 10px;
-            left: 10px;
-            right: 10px;
-            background: rgba(0, 0, 0, 0.9);
-            color: white;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            text-align: center;
-            z-index: 1000;
-            transition: opacity 0.3s;
-        }
+      /* Temp message styles */
+      #tempMessage {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        right: 10px;
+        background: rgba(0, 0, 0, 0.9);
+        color: white;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        text-align: center;
+        z-index: 1000;
+        transition: opacity 0.3s;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="header">
-        <img src="tuneswap.svg" alt="TuneSwap" class="logo" />
-        <h1>TuneSwap</h1>
-        <p>Spotify to Apple Music converter</p>
+      <img src="tuneswap.svg" alt="TuneSwap" class="logo" />
+      <h1>TuneSwap</h1>
+      <p>Spotify to Apple Music converter</p>
     </div>
 
     <div class="content">
-        <div class="current-page">
-            <div class="current-page-title">Current Page</div>
-            <div id="currentUrl">Loading...</div>
-            <div style="margin-top: 8px;">
-                Spotify links: <span id="spotifyCount" class="spotify-links">0</span>
-            </div>
+      <div class="current-page">
+        <div class="current-page-title">Current Page</div>
+        <div id="currentUrl">Loading...</div>
+        <div style="margin-top: 8px">
+          Spotify links: <span id="spotifyCount" class="spotify-links">0</span>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stats-title">📊 Conversion Stats</div>
+        <div class="stat-item">
+          <span>Converted today:</span>
+          <span class="stat-value" id="todayCount">0</span>
+        </div>
+        <div class="stat-item">
+          <span>Total converted:</span>
+          <span class="stat-value" id="totalCount">0</span>
+        </div>
+        <div class="stat-item">
+          <span>Last conversion:</span>
+          <span class="stat-value" id="lastConversion">Never</span>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="controls-title">⚙️ Settings</div>
+
+        <div class="toggle-container">
+          <span>Extension enabled</span>
+          <div class="toggle active" id="enabledToggle">
+            <div class="toggle-slider"></div>
+          </div>
         </div>
 
-        <div class="stats">
-            <div class="stats-title">📊 Conversion Stats</div>
-            <div class="stat-item">
-                <span>Converted today:</span>
-                <span class="stat-value" id="todayCount">0</span>
-            </div>
-            <div class="stat-item">
-                <span>Total converted:</span>
-                <span class="stat-value" id="totalCount">0</span>
-            </div>
-            <div class="stat-item">
-                <span>Last conversion:</span>
-                <span class="stat-value" id="lastConversion">Never</span>
-            </div>
+        <div class="toggle-container">
+          <span>Open in new tab</span>
+          <div class="toggle active" id="newTabToggle">
+            <div class="toggle-slider"></div>
+          </div>
         </div>
 
-        <div class="controls">
-            <div class="controls-title">⚙️ Settings</div>
-            
-            <div class="toggle-container">
-                <span>Extension enabled</span>
-                <div class="toggle active" id="enabledToggle">
-                    <div class="toggle-slider"></div>
-                </div>
-            </div>
-            
-            <div class="toggle-container">
-                <span>Open in new tab</span>
-                <div class="toggle active" id="newTabToggle">
-                    <div class="toggle-slider"></div>
-                </div>
-            </div>
-            
-            <div class="toggle-container">
-                <span>Show notifications</span>
-                <div class="toggle active" id="notificationsToggle">
-                    <div class="toggle-slider"></div>
-                </div>
-            </div>
-
-            <div class="country-selector">
-                <label for="countrySelect">Apple Music Region:</label>
-                <select id="countrySelect">
-                    <option value="us">🇺🇸 United States</option>
-                    <option value="pe">🇵🇪 Peru</option>
-                    <option value="ar">🇦🇷 Argentina</option>
-                    <option value="cl">🇨🇱 Chile</option>
-                    <option value="co">🇨🇴 Colombia</option>
-                    <option value="mx">🇲🇽 Mexico</option>
-                    <option value="es">🇪🇸 Spain</option>
-                    <option value="br">🇧🇷 Brazil</option>
-                    <option value="gb">🇬🇧 United Kingdom</option>
-                    <option value="fr">🇫🇷 France</option>
-                    <option value="de">🇩🇪 Germany</option>
-                    <option value="ca">🇨🇦 Canada</option>
-                    <option value="au">🇦🇺 Australia</option>
-                    <option value="jp">🇯🇵 Japan</option>
-                    <option value="kr">🇰🇷 South Korea</option>
-                    <option value="in">🇮🇳 India</option>
-                </select>
-            </div>
+        <div class="toggle-container">
+          <span>Show notifications</span>
+          <div class="toggle active" id="notificationsToggle">
+            <div class="toggle-slider"></div>
+          </div>
         </div>
 
-        <div class="actions">
-            <div class="actions-title">🚀 Actions</div>
-            <button class="button" id="testConversion">🧪 Test Conversion</button>
-            <button class="button" id="convertAllLinks">🔄 Convert All Links</button>
-            <button class="button" id="clearStats">📊 Clear Statistics</button>
+        <div class="country-selector">
+          <label for="countrySelect">Apple Music Region:</label>
+          <select id="countrySelect">
+            <option value="us">🇺🇸 United States</option>
+            <option value="pe">🇵🇪 Peru</option>
+            <option value="ar">🇦🇷 Argentina</option>
+            <option value="cl">🇨🇱 Chile</option>
+            <option value="co">🇨🇴 Colombia</option>
+            <option value="mx">🇲🇽 Mexico</option>
+            <option value="es">🇪🇸 Spain</option>
+            <option value="br">🇧🇷 Brazil</option>
+            <option value="gb">🇬🇧 United Kingdom</option>
+            <option value="fr">🇫🇷 France</option>
+            <option value="de">🇩🇪 Germany</option>
+            <option value="ca">🇨🇦 Canada</option>
+            <option value="au">🇦🇺 Australia</option>
+            <option value="jp">🇯🇵 Japan</option>
+            <option value="kr">🇰🇷 South Korea</option>
+            <option value="in">🇮🇳 India</option>
+          </select>
         </div>
+      </div>
+
+      <div class="actions">
+        <div class="actions-title">🚀 Actions</div>
+        <button class="button" id="testConversion">🧪 Test Conversion</button>
+        <button class="button" id="convertAllLinks">
+          🔄 Convert All Links
+        </button>
+        <button class="button" id="clearStats">📊 Clear Statistics</button>
+      </div>
     </div>
 
     <div class="footer">
-        Made with ❤️ for music lovers<br>
-        <a href="https://tuneswap.app" target="_blank">tuneswap.app</a>
+      Made with ❤️ for music lovers<br />
+      <a href="https://tuneswap.xyz" target="_blank">tuneswap.xyz</a>
     </div>
 
     <script src="popup.js"></script>
-</body>
+  </body>
 </html>

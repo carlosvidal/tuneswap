@@ -153,7 +153,7 @@ tuneswap/
 ### Need More Help?
 - Open an issue on GitHub
 - Check the diagnostic tools in the extension
-- Contact support at hello@tuneswap.app
+- Contact support at hello@tuneswap.xyz
 
 ## 🤝 Contributing
 
@@ -203,6 +203,6 @@ SOFTWARE.
 
 **Made with ❤️ for music lovers everywhere**
 
-[🌐 Website](https://tuneswap.app) • [🐛 Issues](https://github.com/yourusername/tuneswap/issues) • [💬 Discussions](https://github.com/yourusername/tuneswap/discussions)
+[🌐 Website](https://tuneswap.xyz) • [🐛 Issues](https://github.com/yourusername/tuneswap/issues) • [💬 Discussions](https://github.com/yourusername/tuneswap/discussions)
 
 </div>

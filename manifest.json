@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "TuneSwap",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Instantly convert Spotify links to Apple Music with one click. Seamless music platform switching.",
   "permissions": [
     "activeTab",
@@ -16,8 +16,13 @@
   ],
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"],
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "analytics.js",
+        "content.js"
+      ],
       "run_at": "document_idle"
     }
   ],
@@ -33,6 +38,6 @@
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
-  "homepage_url": "https://tuneswap.app",
+  "homepage_url": "https://tuneswap.xyz",
   "author": "Carlos Vidal"
 }

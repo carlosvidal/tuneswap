@@ -3,6 +3,7 @@
 
 class TuneSwapAnalytics {
     constructor() {
+        console.log('[DEBUG] TuneSwapAnalytics initialized');
         // Use environment-specific endpoint
         this.endpoint = this.getAnalyticsEndpoint();
         this.sessionId = this.generateSessionId();
@@ -84,6 +85,7 @@ class TuneSwapAnalytics {
 
     // Track link conversion
     async trackConversion(conversionData) {
+        console.log('[DEBUG] trackConversion called', conversionData);
         if (!this.isEnabled()) return;
 
         const data = {
@@ -108,6 +110,7 @@ class TuneSwapAnalytics {
 
     // Track page visits where extension is active
     async trackPageVisit(pageData) {
+        console.log('[DEBUG] trackPageVisit called', pageData);
         if (!this.isEnabled()) return;
 
         const data = {
@@ -125,6 +128,7 @@ class TuneSwapAnalytics {
 
     // Track popup interactions
     async trackPopupAction(action, details = {}) {
+        console.log('[DEBUG] trackPopupAction called', action, details);
         if (!this.isEnabled()) return;
 
         const data = {
@@ -141,6 +145,7 @@ class TuneSwapAnalytics {
 
     // Track settings changes
     async trackSettingsChange(settingName, oldValue, newValue) {
+        console.log('[DEBUG] trackSettingsChange called', settingName, oldValue, newValue);
         if (!this.isEnabled()) return;
 
         const data = {
@@ -158,6 +163,7 @@ class TuneSwapAnalytics {
 
     // Track errors
     async trackError(errorData) {
+        console.log('[DEBUG] trackError called', errorData);
         if (!this.isEnabled()) return;
 
         const data = {
@@ -176,6 +182,7 @@ class TuneSwapAnalytics {
 
     // Helper: Anonymize URLs (remove personal identifiers)
     anonymizeUrl(url) {
+        console.log('[DEBUG] anonymizeUrl called', url);
         if (!url) return null;
         
         try {
@@ -188,6 +195,7 @@ class TuneSwapAnalytics {
 
     // Helper: Get source website
     getSourceWebsite(url) {
+        console.log('[DEBUG] getSourceWebsite called', url);
         if (!url) return 'unknown';
         
         try {
@@ -199,6 +207,7 @@ class TuneSwapAnalytics {
 
     // Helper: Categorize websites
     categorizeWebsite(hostname) {
+        console.log('[DEBUG] categorizeWebsite called', hostname);
         const categories = {
             'twitter.com': 'social_media',
             'x.com': 'social_media',
@@ -226,6 +235,7 @@ class TuneSwapAnalytics {
 
     // Send event to analytics server
     async sendEvent(data) {
+        console.log('[DEBUG] sendEvent called', data);
         try {
             // Store locally as backup first
             await this.storeLocally(data);
@@ -244,13 +254,14 @@ class TuneSwapAnalytics {
                 if (response.ok) {
                     console.log('📊 TuneSwap Analytics: Event sent:', data.event);
                 } else {
-                    console.warn('📊 TuneSwap Analytics: Server error:', response.status);
+                    const text = await response.text();
+                    console.warn('📊 TuneSwap Analytics: Server error:', response.status, text);
                 }
             } else {
                 console.log('📊 TuneSwap Analytics: Offline, stored locally:', data.event);
             }
         } catch (error) {
-            console.warn('📊 TuneSwap Analytics: Error sending event:', error.message);
+            console.warn('📊 TuneSwap Analytics: Error sending event:', error.message, error);
             // Data is still stored locally as backup
         }
     }

@@ -4,6 +4,12 @@
     
     console.log('🎵 TuneSwap extension loaded');
 
+    // Initialize analytics
+    let analytics;
+    if (typeof TuneSwapAnalytics !== 'undefined') {
+        analytics = new TuneSwapAnalytics();
+    }
+
     // Function to extract information from a Spotify link
     function extractSpotifyInfo(url) {
         try {
@@ -330,8 +336,18 @@
 
     // Main function to convert link
     async function convertSpotifyToAppleMusic(spotifyUrl) {
+        const startTime = Date.now();
+        
         try {
             console.log('🔄 TuneSwap: Starting conversion:', spotifyUrl);
+            
+            // Track page visit if we have analytics
+            if (analytics) {
+                await analytics.trackPageVisit({
+                    hostname: window.location.hostname,
+                    spotifyLinksCount: document.querySelectorAll('a[href*="spotify.com"]').length
+                });
+            }
             
             // Show loading
             showLoadingIndicator();
@@ -416,14 +432,29 @@
         if (link.href.includes('open.spotify.com') || link.href.includes('spotify.com')) {
             e.preventDefault();
             e.stopPropagation();
-            
+
             console.log('🎵 TuneSwap: Spotify link intercepted:', link.href);
-            
+
             const appleMusicUrl = await convertSpotifyToAppleMusic(link.href);
-            
             if (appleMusicUrl) {
                 console.log('✅ TuneSwap: Opening in Apple Music:', appleMusicUrl);
                 window.open(appleMusicUrl, '_blank');
+                if (analytics && typeof analytics.trackConversion === 'function') {
+                    const conversionData = {
+                        spotifyUrl: link.href,
+                        appleMusicUrl: appleMusicUrl,
+                        spotifyType: extractSpotifyInfo(link.href)?.type || '',
+                        songTitle: '', // Puedes extraerlo si tienes el metadata
+                        artistName: '',
+                        albumName: '',
+                        sourceUrl: window.location.href,
+                        method: 'click',
+                        startTime: Date.now(),
+                        success: !!appleMusicUrl
+                    };
+                    console.log('[DEBUG] Calling analytics.trackConversion', conversionData);
+                    analytics.trackConversion(conversionData);
+                }
             } else {
                 console.warn('⚠️ TuneSwap: Using fallback');
                 window.open(await createFallbackUrl(), '_blank');
@@ -440,6 +471,22 @@
                 convertSpotifyToAppleMusic(request.url).then(appleMusicUrl => {
                     if (appleMusicUrl) {
                         window.open(appleMusicUrl, '_blank');
+                        if (analytics && typeof analytics.trackConversion === 'function') {
+    const conversionData = {
+        spotifyUrl: request.url,
+        appleMusicUrl: appleMusicUrl,
+        spotifyType: extractSpotifyInfo(request.url)?.type || '',
+        songTitle: '', // Puedes extraerlo si tienes el metadata
+        artistName: '',
+        albumName: '',
+        sourceUrl: window.location.href,
+        method: 'background',
+        startTime: Date.now(),
+        success: !!appleMusicUrl
+    };
+    console.log('[DEBUG] Calling analytics.trackConversion (background)', conversionData);
+    analytics.trackConversion(conversionData);
+}
                         sendResponse({success: true, url: appleMusicUrl});
                     } else {
                         window.open(createFallbackUrl(), '_blank');

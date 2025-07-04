@@ -1,0 +1,12 @@
+node_modules/
+.DS_Store
+*.log
+.env
+package-lock.json
+yarn.lock
+dist/
+build/
+web-ext-artifacts/
+*.zip
+*.crx
+*.pem
