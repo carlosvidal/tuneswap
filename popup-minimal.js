@@ -41,17 +41,32 @@ async function initializeMinimalPopup() {
     try {
         const [tab] = await chrome.tabs.query({active: true, currentWindow: true});
         const urlElement = document.getElementById('currentUrl');
-        if (urlElement && tab) {
+        
+        // Verify tab and tab.url exist
+        if (!tab || !tab.url) {
+            console.warn('Tab or tab.url is undefined:', tab);
+            if (urlElement) urlElement.textContent = 'No tab access';
+            
+            const statusElement = document.getElementById('pageStatus');
+            if (statusElement) {
+                statusElement.innerHTML = '⚠️ Cannot access current tab - try opening from a web page';
+                statusElement.className = '';
+            }
+            return;
+        }
+        
+        if (urlElement) {
             try {
                 const url = new URL(tab.url);
                 urlElement.textContent = url.hostname;
-            } catch (error) {
-                urlElement.textContent = 'Unknown page';
+            } catch (urlError) {
+                console.warn('Invalid URL:', tab.url, urlError);
+                urlElement.textContent = 'Invalid URL';
             }
         }
         
         // Check if on Spotify and update status
-        const isSpotify = tab && tab.url.includes('spotify.com');
+        const isSpotify = tab.url.includes('spotify.com');
         const statusElement = document.getElementById('pageStatus');
         if (statusElement) {
             if (isSpotify) {
@@ -300,12 +315,17 @@ function setupMinimalEventListeners() {
     if (manualBtn) {
         manualBtn.addEventListener('click', async () => {
             try {
-                const [tab] = await chrome.tabs.query({active: true, currentWindow: true});
-                
-                if (!tab.url.includes('spotify.com')) {
-                    showTemporaryMessage('❌ Not a Spotify page');
-                    return;
-                }
+            const [tab] = await chrome.tabs.query({active: true, currentWindow: true});
+            
+            if (!tab || !tab.url) {
+            showTemporaryMessage('⚠️ Cannot access current tab');
+            return;
+            }
+            
+            if (!tab.url.includes('spotify.com')) {
+                showTemporaryMessage('❌ Not a Spotify page');
+                return;
+            }
                 
                 showTemporaryMessage('🔄 Converting...');
                 

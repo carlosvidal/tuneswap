@@ -4,7 +4,8 @@
   "version": "1.0.2",
   "description": "Automatically redirect Spotify to Apple Music when you open Spotify links.",
   "permissions": [
-    "storage"
+    "storage",
+    "activeTab"
   ],
   "host_permissions": [
     "https://open.spotify.com/*",

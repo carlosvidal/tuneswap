@@ -11,7 +11,7 @@
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
           sans-serif;
         margin: 0;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: #000;
         color: white;
         overflow-x: hidden;
       }
@@ -66,7 +66,7 @@
       }
 
       .page-url {
-        font-family: 'Monaco', 'Menlo', monospace;
+        font-family: "Monaco", "Menlo", monospace;
         background: rgba(0, 0, 0, 0.2);
         padding: 4px 8px;
         border-radius: 4px;
@@ -85,7 +85,7 @@
       }
 
       #pageStatus.spotify-active {
-        border-left-color: #1DB954;
+        border-left-color: #1db954;
         background: rgba(29, 185, 84, 0.2);
       }
 
@@ -202,12 +202,12 @@
       }
 
       .button.primary {
-        background: linear-gradient(135deg, #1DB954, #1ed760);
+        background: linear-gradient(135deg, #1db954, #1ed760);
         border: 1px solid rgba(29, 185, 84, 0.3);
       }
 
       .button.primary:hover {
-        background: linear-gradient(135deg, #1ed760, #1DB954);
+        background: linear-gradient(135deg, #1ed760, #1db954);
         transform: translateY(-1px);
       }
 
@@ -233,7 +233,7 @@
         display: none;
         margin-top: 15px;
         padding-top: 15px;
-        border-top: 1px solid rgba(255,255,255,0.1);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
       }
 
       .debug-section.show {
@@ -266,7 +266,7 @@
         height: 40px;
         margin: 0 auto 10px;
         display: none;
-        background: linear-gradient(135deg, #1DB954, #fa233b);
+        background: linear-gradient(135deg, #1db954, #fa233b);
         border-radius: 50%;
         position: relative;
       }
@@ -285,7 +285,12 @@
   </head>
   <body>
     <div class="header">
-      <img src="tuneswap.svg" alt="TuneSwap" class="logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+      <img
+        src="tuneswap.svg"
+        alt="TuneSwap"
+        class="logo"
+        onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+      />
       <div class="logo-fallback"></div>
       <h1>TuneSwap</h1>
       <p>Spotify to Apple Music converter</p>
@@ -344,19 +349,34 @@
 
       <div class="actions">
         <div class="actions-title">🚀 Actions</div>
-        <button class="button primary" id="testConversion">🧪 Test Conversion</button>
-        <button class="button primary" id="manualConvert" style="display: none;">🔄 Convert This Page</button>
+        <button class="button primary" id="testConversion">
+          🧪 Test Conversion
+        </button>
+        <button class="button primary" id="manualConvert" style="display: none">
+          🔄 Convert This Page
+        </button>
         <button class="button" id="clearStats">📊 Clear Statistics</button>
-        
+
         <!-- Debug section - hidden by default -->
-        <div class="debug-toggle">
-          🔧 Show Debug Tools
-        </div>
+        <div class="debug-toggle">🔧 Show Debug Tools</div>
         <div class="debug-section">
-          <div style="font-size: 12px; font-weight: 600; margin-bottom: 8px; text-align: center;">🔧 Debug Tools</div>
-          <button class="button debug" id="runDiagnostic">🔍 Test Storage</button>
+          <div
+            style="
+              font-size: 12px;
+              font-weight: 600;
+              margin-bottom: 8px;
+              text-align: center;
+            "
+          >
+            🔧 Debug Tools
+          </div>
+          <button class="button debug" id="runDiagnostic">
+            🔍 Test Storage
+          </button>
           <button class="button debug" id="fixStorage">🔧 Reset Storage</button>
-          <button class="button debug" id="viewStorage">👁️ View Storage Data</button>
+          <button class="button debug" id="viewStorage">
+            👁️ View Storage Data
+          </button>
         </div>
       </div>
     </div>
