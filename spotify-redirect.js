@@ -4,6 +4,15 @@
     
     console.log('🎵 TuneSwap: Enhanced redirect loaded on Spotify page');
 
+    // Initialize analytics
+    let analytics;
+    if (typeof SimpleAnalytics !== 'undefined') {
+        analytics = new SimpleAnalytics();
+        console.log('📊 Analytics initialized');
+    } else {
+        console.warn('📊 SimpleAnalytics not available');
+    }
+
     // Check if extension is enabled
     async function isExtensionEnabled() {
         try {
@@ -619,6 +628,26 @@
                 chrome.runtime.sendMessage({ action: 'updateStats' });
             } catch (error) {
                 console.warn('⚠️ TuneSwap: Could not update stats');
+            }
+
+            // Track conversion with analytics
+            if (analytics) {
+                try {
+                    const countryCode = await getCountryCode();
+                    analytics.trackConversion({
+                        spotifyType: spotifyInfo.type,
+                        songTitle: metadata.title,
+                        artistName: metadata.artist,
+                        albumName: metadata.album,
+                        countryCode: countryCode,
+                        isExactMatch: isExactMatch,
+                        appleMusicUrl: appleMusicUrl,
+                        spotifyUrl: spotifyInfo.originalUrl
+                    });
+                    console.log('📊 Analytics tracked successfully');
+                } catch (analyticsError) {
+                    console.warn('📊 Analytics tracking failed:', analyticsError);
+                }
             }
 
             showConversionNotice(appleMusicUrl, metadata, isExactMatch);

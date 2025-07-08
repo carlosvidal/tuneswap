@@ -29,7 +29,6 @@
         height: 40px;
         margin: 0 auto 10px;
         display: block;
-        filter: brightness(0) invert(1);
       }
 
       .header h1 {
@@ -61,11 +60,33 @@
       .current-page-title {
         font-weight: 600;
         margin-bottom: 5px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
       }
 
-      .spotify-links {
-        color: #1db954;
-        font-weight: 600;
+      .page-url {
+        font-family: 'Monaco', 'Menlo', monospace;
+        background: rgba(0, 0, 0, 0.2);
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+      }
+
+      #pageStatus {
+        margin-top: 8px;
+        font-size: 11px;
+        opacity: 0.9;
+        padding: 6px 10px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 6px;
+        border-left: 3px solid #666;
+        transition: all 0.3s;
+      }
+
+      #pageStatus.spotify-active {
+        border-left-color: #1DB954;
+        background: rgba(29, 185, 84, 0.2);
       }
 
       .stats {
@@ -107,44 +128,6 @@
         font-weight: 600;
         margin-bottom: 15px;
         text-align: center;
-      }
-
-      .toggle-container {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 12px;
-        font-size: 13px;
-      }
-
-      .toggle {
-        position: relative;
-        width: 44px;
-        height: 24px;
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 12px;
-        cursor: pointer;
-        transition: background 0.3s;
-        flex-shrink: 0;
-      }
-
-      .toggle.active {
-        background: #34c759;
-      }
-
-      .toggle-slider {
-        position: absolute;
-        top: 2px;
-        left: 2px;
-        width: 20px;
-        height: 20px;
-        background: white;
-        border-radius: 50%;
-        transition: transform 0.3s;
-      }
-
-      .toggle.active .toggle-slider {
-        transform: translateX(20px);
       }
 
       .country-selector {
@@ -198,19 +181,34 @@
         transition: all 0.3s;
         margin-bottom: 8px;
         backdrop-filter: blur(5px);
+        border: none;
       }
 
-      .button:hover {
+      .button:hover:not(:disabled) {
         background: rgba(255, 255, 255, 0.25);
         transform: translateY(-1px);
       }
 
-      .button:active {
+      .button:active:not(:disabled) {
         transform: translateY(0);
       }
 
       .button:last-child {
         margin-bottom: 0;
+      }
+
+      .button[style*="display: none"] {
+        display: none !important;
+      }
+
+      .button.primary {
+        background: linear-gradient(135deg, #1DB954, #1ed760);
+        border: 1px solid rgba(29, 185, 84, 0.3);
+      }
+
+      .button.primary:hover {
+        background: linear-gradient(135deg, #1ed760, #1DB954);
+        transform: translateY(-1px);
       }
 
       .footer {
@@ -230,42 +228,76 @@
         text-decoration: underline;
       }
 
-      .loading {
-        text-align: center;
-        padding: 20px;
+      /* Debug section - hidden by default */
+      .debug-section {
+        display: none;
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid rgba(255,255,255,0.1);
       }
 
-      /* Temp message styles */
-      #tempMessage {
-        position: fixed;
-        top: 10px;
-        left: 10px;
-        right: 10px;
-        background: rgba(0, 0, 0, 0.9);
-        color: white;
-        padding: 8px 12px;
-        border-radius: 6px;
-        font-size: 12px;
+      .debug-section.show {
+        display: block;
+      }
+
+      .debug-toggle {
+        font-size: 10px;
+        opacity: 0.5;
+        cursor: pointer;
         text-align: center;
-        z-index: 1000;
-        transition: opacity 0.3s;
+        padding: 5px;
+        user-select: none;
+      }
+
+      .debug-toggle:hover {
+        opacity: 1;
+      }
+
+      .button.debug {
+        background: rgba(255, 165, 0, 0.2);
+        border: 1px solid rgba(255, 165, 0, 0.3);
+        font-size: 11px;
+        padding: 8px;
+      }
+
+      /* Fallback logo */
+      .logo-fallback {
+        width: 40px;
+        height: 40px;
+        margin: 0 auto 10px;
+        display: none;
+        background: linear-gradient(135deg, #1DB954, #fa233b);
+        border-radius: 50%;
+        position: relative;
+      }
+
+      .logo-fallback::before {
+        content: "♪";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-size: 20px;
+        font-weight: bold;
       }
     </style>
   </head>
   <body>
     <div class="header">
-      <img src="tuneswap.svg" alt="TuneSwap" class="logo" />
+      <img src="tuneswap.svg" alt="TuneSwap" class="logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+      <div class="logo-fallback"></div>
       <h1>TuneSwap</h1>
       <p>Spotify to Apple Music converter</p>
     </div>
 
     <div class="content">
       <div class="current-page">
-        <div class="current-page-title">Current Page</div>
-        <div id="currentUrl">Loading...</div>
-        <div style="margin-top: 8px">
-          Spotify links: <span id="spotifyCount" class="spotify-links">0</span>
+        <div class="current-page-title">
+          <span>📍 Current Page</span>
+          <span class="page-url" id="currentUrl">Loading...</span>
         </div>
+        <div id="pageStatus">📱 Open a Spotify link to use TuneSwap</div>
       </div>
 
       <div class="stats">
@@ -286,27 +318,6 @@
 
       <div class="controls">
         <div class="controls-title">⚙️ Settings</div>
-
-        <div class="toggle-container">
-          <span>Extension enabled</span>
-          <div class="toggle active" id="enabledToggle">
-            <div class="toggle-slider"></div>
-          </div>
-        </div>
-
-        <div class="toggle-container">
-          <span>Open in new tab</span>
-          <div class="toggle active" id="newTabToggle">
-            <div class="toggle-slider"></div>
-          </div>
-        </div>
-
-        <div class="toggle-container">
-          <span>Show notifications</span>
-          <div class="toggle active" id="notificationsToggle">
-            <div class="toggle-slider"></div>
-          </div>
-        </div>
 
         <div class="country-selector">
           <label for="countrySelect">Apple Music Region:</label>
@@ -333,11 +344,20 @@
 
       <div class="actions">
         <div class="actions-title">🚀 Actions</div>
-        <button class="button" id="testConversion">🧪 Test Conversion</button>
-        <button class="button" id="convertAllLinks">
-          🔄 Convert All Links
-        </button>
+        <button class="button primary" id="testConversion">🧪 Test Conversion</button>
+        <button class="button primary" id="manualConvert" style="display: none;">🔄 Convert This Page</button>
         <button class="button" id="clearStats">📊 Clear Statistics</button>
+        
+        <!-- Debug section - hidden by default -->
+        <div class="debug-toggle">
+          🔧 Show Debug Tools
+        </div>
+        <div class="debug-section">
+          <div style="font-size: 12px; font-weight: 600; margin-bottom: 8px; text-align: center;">🔧 Debug Tools</div>
+          <button class="button debug" id="runDiagnostic">🔍 Test Storage</button>
+          <button class="button debug" id="fixStorage">🔧 Reset Storage</button>
+          <button class="button debug" id="viewStorage">👁️ View Storage Data</button>
+        </div>
       </div>
     </div>
 
@@ -346,6 +366,6 @@
       <a href="https://tuneswap.xyz" target="_blank">tuneswap.xyz</a>
     </div>
 
-    <script src="popup.js"></script>
+    <script src="popup-minimal.js"></script>
   </body>
 </html>

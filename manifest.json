@@ -17,6 +17,7 @@
         "https://spotify.com/*"
       ],
       "js": [
+        "simple-analytics.js",
         "spotify-redirect.js"
       ],
       "run_at": "document_start"
