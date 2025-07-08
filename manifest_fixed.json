@@ -2,25 +2,13 @@
   "manifest_version": 3,
   "name": "TuneSwap",
   "version": "1.0.2",
-  "description": "Automatically redirect Spotify to Apple Music when you open Spotify links.",
+  "description": "Convert Spotify links to Apple Music. Works with right-click context menu and popup.",
   "permissions": [
+    "contextMenus",
     "storage"
   ],
   "host_permissions": [
-    "https://open.spotify.com/*",
-    "https://spotify.com/*"
-  ],
-  "content_scripts": [
-    {
-      "matches": [
-        "https://open.spotify.com/*",
-        "https://spotify.com/*"
-      ],
-      "js": [
-        "spotify-redirect.js"
-      ],
-      "run_at": "document_start"
-    }
+    "https://open.spotify.com/*"
   ],
   "background": {
     "service_worker": "background.js"

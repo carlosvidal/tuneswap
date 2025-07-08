@@ -1,4 +1,4 @@
-// popup.js - TuneSwap Popup Script
+// popup.js - TuneSwap Popup Script (Updated for Redirect Mode)
 
 document.addEventListener('DOMContentLoaded', async function() {
     console.log('🎵 TuneSwap: Popup loaded');
@@ -19,8 +19,8 @@ async function initializePopup() {
         // Load statistics
         await loadStats();
         
-        // Count Spotify links on current page
-        await countSpotifyLinks(tab.id);
+        // Check if we're on Spotify
+        checkSpotifyPage(tab);
         
     } catch (error) {
         console.error('TuneSwap: Error initializing popup:', error);
@@ -30,24 +30,56 @@ async function initializePopup() {
 // Update current page information
 function updateCurrentPageInfo(tab) {
     const urlElement = document.getElementById('currentUrl');
-    const url = new URL(tab.url);
-    urlElement.textContent = url.hostname;
+    const statusElement = document.getElementById('pageStatus');
+    
+    if (urlElement) {
+        const url = new URL(tab.url);
+        urlElement.textContent = url.hostname;
+    }
+    
+    if (statusElement) {
+        const isSpotify = tab.url.includes('spotify.com');
+        if (isSpotify) {
+            statusElement.innerHTML = '🎵 <strong>Spotify detected</strong> - TuneSwap is active';
+            statusElement.style.color = '#1DB954';
+        } else {
+            statusElement.innerHTML = '📱 Open a Spotify link to use TuneSwap';
+            statusElement.style.color = '#666';
+        }
+    }
+}
+
+// Check if current page is Spotify
+function checkSpotifyPage(tab) {
+    const testButton = document.getElementById('testConversion');
+    const manualButton = document.getElementById('manualConvert');
+    
+    if (tab.url.includes('spotify.com')) {
+        // We're on Spotify - show manual convert option
+        if (testButton) {
+            testButton.style.display = 'none';
+        }
+        if (manualButton) {
+            manualButton.style.display = 'block';
+        }
+    } else {
+        // Not on Spotify - show test option
+        if (testButton) {
+            testButton.style.display = 'block';
+        }
+        if (manualButton) {
+            manualButton.style.display = 'none';
+        }
+    }
 }
 
 // Load saved settings
 async function loadSettings() {
     try {
-        const settings = await chrome.storage.sync.get([
-            'enabled', 
-            'openInNewTab', 
-            'showNotifications',
-            'countryCode'
-        ]);
+        const settings = await chrome.runtime.sendMessage({ action: 'getSettings' });
         
         // Update toggles
         updateToggle('enabledToggle', settings.enabled !== false);
-        updateToggle('newTabToggle', settings.openInNewTab !== false);
-        updateToggle('notificationsToggle', settings.showNotifications !== false);
         
         // Update country selector
         const countrySelect = document.getElementById('countrySelect');
@@ -63,23 +95,22 @@ async function loadSettings() {
 // Load statistics
 async function loadStats() {
     try {
-        const stats = await chrome.storage.local.get([
-            'todayCount',
-            'totalCount', 
-            'lastConversion',
-            'lastDate'
-        ]);
+        const response = await chrome.runtime.sendMessage({ action: 'getStats' });
         
-        const today = new Date().toDateString();
-        const todayCount = (stats.lastDate === today) ? (stats.todayCount || 0) : 0;
-        
-        document.getElementById('todayCount').textContent = todayCount;
-        document.getElementById('totalCount').textContent = stats.totalCount || 0;
-        
-        const lastConversion = stats.lastConversion;
-        if (lastConversion) {
-            const date = new Date(lastConversion);
-            document.getElementById('lastConversion').textContent = formatRelativeTime(date);
+        if (response.success) {
+            const stats = response.stats;
+            
+            const todayEl = document.getElementById('todayCount');
+            const totalEl = document.getElementById('totalCount');
+            const lastEl = document.getElementById('lastConversion');
+            
+            if (todayEl) todayEl.textContent = stats.todayCount;
+            if (totalEl) totalEl.textContent = stats.totalCount;
+            
+            if (lastEl && stats.lastConversion) {
+                const date = new Date(stats.lastConversion);
+                lastEl.textContent = formatRelativeTime(date);
+            }
         }
         
     } catch (error) {
@@ -87,80 +118,72 @@ async function loadStats() {
     }
 }
 
-// Count Spotify links on the page
-async function countSpotifyLinks(tabId) {
-    try {
-        const results = await chrome.scripting.executeScript({
-            target: {tabId: tabId},
-            func: () => {
-                const spotifyLinks = document.querySelectorAll('a[href*="spotify.com"], a[href*="open.spotify.com"]');
-                return spotifyLinks.length;
-            }
-        });
-        
-        const count = results[0]?.result || 0;
-        document.getElementById('spotifyCount').textContent = count;
-        
-    } catch (error) {
-        console.error('TuneSwap: Error counting links:', error);
-        document.getElementById('spotifyCount').textContent = '?';
-    }
-}
-
 // Set up event listeners
 function setupEventListeners() {
     // Configuration toggles
-    document.getElementById('enabledToggle').addEventListener('click', () => {
-        toggleSetting('enabled', 'enabledToggle');
-    });
-    
-    document.getElementById('newTabToggle').addEventListener('click', () => {
-        toggleSetting('openInNewTab', 'newTabToggle');
-    });
-    
-    document.getElementById('notificationsToggle').addEventListener('click', () => {
-        toggleSetting('showNotifications', 'notificationsToggle');
-    });
+    const enabledToggle = document.getElementById('enabledToggle');
+    if (enabledToggle) {
+        enabledToggle.addEventListener('click', () => {
+            toggleSetting('enabled', 'enabledToggle');
+        });
+    }
 
     // Country selector
-    document.getElementById('countrySelect').addEventListener('change', async (e) => {
-        try {
-            await chrome.storage.sync.set({countryCode: e.target.value});
-            const countryName = e.target.options[e.target.selectedIndex].text;
-            showTemporaryMessage(`Region changed to: ${countryName}`);
-        } catch (error) {
-            console.error('TuneSwap: Error saving country:', error);
-        }
-    });
+    const countrySelect = document.getElementById('countrySelect');
+    if (countrySelect) {
+        countrySelect.addEventListener('change', async (e) => {
+            try {
+                await chrome.runtime.sendMessage({
+                    action: 'saveSettings',
+                    settings: { countryCode: e.target.value }
+                });
+                const countryName = e.target.options[e.target.selectedIndex].text;
+                showTemporaryMessage(`Region changed to: ${countryName}`);
+            } catch (error) {
+                console.error('TuneSwap: Error saving country:', error);
+            }
+        });
+    }
     
     // Action buttons
-    document.getElementById('testConversion').addEventListener('click', testConversion);
-    document.getElementById('convertAllLinks').addEventListener('click', convertAllLinks);
-    document.getElementById('clearStats').addEventListener('click', clearStats);
+    const testBtn = document.getElementById('testConversion');
+    if (testBtn) testBtn.addEventListener('click', testConversion);
+    
+    const manualBtn = document.getElementById('manualConvert');
+    if (manualBtn) manualBtn.addEventListener('click', manualConvert);
+    
+    const clearBtn = document.getElementById('clearStats');
+    if (clearBtn) clearBtn.addEventListener('click', clearStats);
 }
 
 // Update toggle state
 function updateToggle(toggleId, isActive) {
     const toggle = document.getElementById(toggleId);
-    if (isActive) {
-        toggle.classList.add('active');
-    } else {
-        toggle.classList.remove('active');
+    if (toggle) {
+        if (isActive) {
+            toggle.classList.add('active');
+        } else {
+            toggle.classList.remove('active');
+        }
     }
 }
 
 // Change setting
 async function toggleSetting(settingName, toggleId) {
     try {
-        const current = await chrome.storage.sync.get([settingName]);
+        const current = await chrome.runtime.sendMessage({ action: 'getSettings' });
         const newValue = !current[settingName];
         
-        await chrome.storage.sync.set({[settingName]: newValue});
+        await chrome.runtime.sendMessage({
+            action: 'saveSettings',
+            settings: { [settingName]: newValue }
+        });
+        
         updateToggle(toggleId, newValue);
         
         // Show feedback
         const status = newValue ? 'enabled' : 'disabled';
-        showTemporaryMessage(`${settingName} ${status}`);
+        showTemporaryMessage(`TuneSwap ${status}`);
         
     } catch (error) {
         console.error('TuneSwap: Error changing setting:', error);
@@ -169,94 +192,112 @@ async function toggleSetting(settingName, toggleId) {
 
 // Test conversion with example link
 async function testConversion() {
-    const testUrl = 'https://open.spotify.com/track/4iV5W9uYEdYUVa79Axb7Rh';
-    
-    showTemporaryMessage('Testing conversion...');
+    showTemporaryMessage('Opening test Spotify link...');
     
     try {
-        // Get country code from settings
-        const settings = await chrome.storage.sync.get(['countryCode']);
-        const countryCode = settings.countryCode || 'us';
+        // Open a test Spotify track - TuneSwap will handle the conversion
+        const testSpotifyUrl = 'https://open.spotify.com/track/4iV5W9uYEdYUVa79Axb7Rh';
+        chrome.tabs.create({ url: testSpotifyUrl });
         
-        // Get real Spotify metadata
-        const response = await fetch(`https://open.spotify.com/embed/track/4iV5W9uYEdYUVa79Axb7Rh`);
-        const html = await response.text();
-        
-        // Extract real title
-        const titleMatch = html.match(/<title>([^<]+)<\/title>/);
-        let title = titleMatch ? titleMatch[1].replace(' | Spotify', '') : 'Never Gonna Give You Up';
-        
-        // Clean title for optimal search (same logic as content script)
-        // Remove content in parentheses/brackets
-        title = title.replace(/\s*[\(\[].*?[\)\]]/g, '');
-        
-        // Remove featuring/feat/ft
-        title = title.replace(/\s*(feat\.?|ft\.?|featuring)\s+.*/gi, '');
-        
-        // Only remove specific remix/version info after dash, keep titles like "Anti-Hero"
-        title = title.replace(/\s*-\s*(remix|version|edit|mix|instrumental|acoustic|live|radio|explicit|clean|remaster|deluxe).*$/gi, '');
-        
-        // Minimal cleanup - preserve hyphens in titles
-        title = title.replace(/\s+/g, ' ').trim();
-        
-        console.log('🎵 TuneSwap: Extracted and cleaned title:', title);
-        console.log('🌍 TuneSwap: Using country:', countryCode);
-        
-        // Use configured country code
-        const appleMusicUrl = `https://music.apple.com/${countryCode}/search?term=${encodeURIComponent(title)}`;
-        
-        chrome.tabs.create({url: appleMusicUrl});
-        showTemporaryMessage('✅ Conversion successful - opening Apple Music');
+        showTemporaryMessage('✅ Test link opened - TuneSwap will convert it!');
         
     } catch (error) {
         console.error('TuneSwap: Error in test:', error);
-        // Fallback with simple search
-        const fallbackUrl = 'https://music.apple.com/us/search?term=never%20gonna%20give%20you%20up';
-        chrome.tabs.create({url: fallbackUrl});
-        showTemporaryMessage('✅ Using basic search');
+        showTemporaryMessage('❌ Test failed');
     }
 }
 
-// Convert all links on the page
-async function convertAllLinks() {
+// Manual convert current Spotify page
+async function manualConvert() {
     try {
         const [tab] = await chrome.tabs.query({active: true, currentWindow: true});
         
-        showTemporaryMessage('Converting all links...');
+        if (!tab.url.includes('spotify.com')) {
+            showTemporaryMessage('❌ This is not a Spotify page');
+            return;
+        }
         
+        showTemporaryMessage('🔄 Converting current page...');
+        
+        // Get settings to determine country
+        const settings = await chrome.runtime.sendMessage({ action: 'getSettings' });
+        const countryCode = settings.countryCode || 'us';
+        
+        // Try to get title from current page
         const results = await chrome.scripting.executeScript({
-            target: {tabId: tab.id},
+            target: { tabId: tab.id },
             func: () => {
-                const spotifyLinks = document.querySelectorAll('a[href*="spotify.com"], a[href*="open.spotify.com"]');
-                let converted = 0;
-                
-                spotifyLinks.forEach(link => {
-                    // Add visual indicator
-                    link.style.border = '2px solid #1DB954';
-                    link.style.borderRadius = '4px';
-                    link.title = 'TuneSwap: Link marked for conversion';
-                    converted++;
-                });
-                
-                return converted;
+                const title = document.title.replace(' | Spotify', '');
+                const ogTitle = document.querySelector('meta[property="og:title"]');
+                return {
+                    pageTitle: title !== 'Spotify' ? title : '',
+                    ogTitle: ogTitle ? ogTitle.content : ''
+                };
             }
         });
         
-        const count = results[0]?.result || 0;
-        showTemporaryMessage(`✅ ${count} links marked for conversion`);
+        const pageData = results[0]?.result || {};
+        let searchQuery = pageData.pageTitle || pageData.ogTitle || '';
+        
+        // Clean the title for better search
+        if (searchQuery) {
+            // Remove "by Artist" part and use just the song title for better matching
+            const byMatch = searchQuery.match(/^(.+?)\s+by\s+(.+)$/i);
+            if (byMatch) {
+                searchQuery = byMatch[1].trim(); // Just the song title
+            }
+            
+            // Clean up the title
+            searchQuery = searchQuery
+                .replace(/\s*[\(\[].*?[\)\]]/g, '') // Remove parentheses content
+                .replace(/\s*(feat\.?|ft\.?|featuring)\s+.*/gi, '') // Remove featuring
+                .replace(/\s*-\s*(remix|version|edit|mix|instrumental|acoustic|live).*$/gi, '') // Remove remix info
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
+        
+        // Fallback if no good title found
+        if (!searchQuery || searchQuery.length < 2) {
+            const url = tab.url;
+            if (url.includes('/track/')) {
+                searchQuery = 'spotify track';
+            } else if (url.includes('/album/')) {
+                searchQuery = 'spotify album';
+            } else if (url.includes('/artist/')) {
+                searchQuery = 'spotify artist';
+            } else {
+                searchQuery = 'spotify music';
+            }
+        }
+        
+        // Create Apple Music URL
+        const appleMusicUrl = `https://music.apple.com/${countryCode}/search?term=${encodeURIComponent(searchQuery)}`;
+        
+        // Open Apple Music
+        chrome.tabs.create({ url: appleMusicUrl });
+        
+        // Update stats
+        chrome.runtime.sendMessage({ action: 'updateStats' });
+        
+        showTemporaryMessage(`✅ Opened "${searchQuery}" in Apple Music`);
         
     } catch (error) {
-        console.error('TuneSwap: Error converting links:', error);
-        showTemporaryMessage('❌ Error converting links');
+        console.error('TuneSwap: Error in manual convert:', error);
+        showTemporaryMessage('❌ Conversion failed');
     }
 }
 
 // Clear statistics
 async function clearStats() {
     try {
-        await chrome.storage.local.clear();
-        await loadStats();
-        showTemporaryMessage('📊 Statistics cleared');
+        const response = await chrome.runtime.sendMessage({ action: 'clearStats' });
+        
+        if (response.success) {
+            await loadStats();
+            showTemporaryMessage('📊 Statistics cleared');
+        } else {
+            showTemporaryMessage('❌ Error clearing statistics');
+        }
         
     } catch (error) {
         console.error('TuneSwap: Error clearing statistics:', error);
